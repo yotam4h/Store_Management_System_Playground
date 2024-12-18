@@ -25,7 +25,15 @@ public class EmployeeDao implements Dao<Employee>
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-        logger = new Logger();
+        try {
+            if(System.getProperty("os.name").startsWith("Windows")) {
+                logger = new Logger("C:\\tmp\\log.txt");
+            } else {
+                logger = new Logger("/logs/log.txt");
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
