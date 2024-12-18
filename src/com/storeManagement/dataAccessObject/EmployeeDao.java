@@ -37,8 +37,13 @@ public class EmployeeDao implements Dao<Employee>
     }
 
     @Override
-    public int add(Employee emp) throws SQLException
+    public int add(Employee emp) throws SQLException, IllegalArgumentException
     {
+        if (emp == null)
+        {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
+
         String query = "INSERT INTO Employees (full_name, phone_number, role, branch_id) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setString(1, emp.getFullName());
@@ -116,8 +121,13 @@ public class EmployeeDao implements Dao<Employee>
     }
 
     @Override
-    public void update(Employee emp) throws SQLException
+    public void update(Employee emp) throws SQLException, IllegalArgumentException
     {
+        if(emp == null)
+        {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
+
         String query = "UPDATE Employees SET full_name = ?, phone_number = ?, role = ?, branch_id = ? WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setString(1, emp.getFullName());

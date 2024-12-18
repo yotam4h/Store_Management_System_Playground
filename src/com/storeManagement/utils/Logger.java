@@ -7,9 +7,15 @@ import java.io.File;
 
 public class Logger
 {
-    String path = "/logs/log.txt";
+    String path = "log.txt";
 
-    public Logger() { }
+    public Logger() {
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            setPath("C:\\tmp\\log.txt");
+        } else {
+            setPath("/logs/log.txt");
+        }
+    }
 
     public Logger(String path)
     {
