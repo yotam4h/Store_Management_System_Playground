@@ -1,0 +1,65 @@
+[Tue Dec 17 19:01:05 IST 2024] ADD:		Employee{id=35, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Tue Dec 17 19:01:05 IST 2024] UPDATE:	Employee{id=35, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Tue Dec 17 19:01:05 IST 2024] DELETE:	Employee with ID 35 deleted
+[Tue Dec 17 19:01:09 IST 2024] ADD:		Employee{id=36, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Tue Dec 17 19:01:09 IST 2024] UPDATE:	Employee{id=36, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Tue Dec 17 19:01:09 IST 2024] DELETE:	Employee with ID 36 deleted
+[Tue Dec 17 19:10:46 IST 2024] ADD:		Employee{id=37, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Tue Dec 17 19:10:46 IST 2024] UPDATE:	Employee{id=37, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 11:43:39 IST 2024] ADD:		Employee{id=38, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 11:43:39 IST 2024] UPDATE:	Employee{id=38, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 11:43:39 IST 2024] DELETE:	Employee with ID 38 deleted
+[Wed Dec 18 11:52:27 IST 2024] ADD:		Employee{id=39, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 11:52:27 IST 2024] UPDATE:	Employee{id=39, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 11:52:27 IST 2024] DELETE:	Employee with ID 39 deleted
+[Wed Dec 18 11:53:15 IST 2024] ADD:		Employee{id=40, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 11:53:15 IST 2024] UPDATE:	Employee{id=40, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 11:53:15 IST 2024] DELETE:	Employee with ID 40 deleted
+[Wed Dec 18 11:58:48 IST 2024] ADD:		Employee{id=41, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 11:58:48 IST 2024] UPDATE:	Employee{id=41, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 11:58:48 IST 2024] DELETE:	Employee with ID 41 deleted
+[Wed Dec 18 12:00:00 IST 2024] ADD:		Employee{id=42, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:00:00 IST 2024] UPDATE:	Employee{id=42, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:00:00 IST 2024] DELETE:	Employee with ID 42 deleted
+[Wed Dec 18 12:02:10 IST 2024] ADD:		Employee{id=43, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:02:10 IST 2024] UPDATE:	Employee{id=43, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:02:10 IST 2024] DELETE:	Employee with ID 43 deleted
+[Wed Dec 18 12:07:14 IST 2024] ADD:		Employee{id=44, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:07:14 IST 2024] UPDATE:	Employee{id=44, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:07:14 IST 2024] DELETE:	Employee with ID 44 deleted
+[Wed Dec 18 12:08:23 IST 2024] ADD:		Employee{id=45, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:08:23 IST 2024] UPDATE:	Employee{id=45, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:08:23 IST 2024] DELETE:	Employee with ID 45 deleted
+[Wed Dec 18 12:33:17 IST 2024] ADD:		Employee{id=46, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:33:17 IST 2024] UPDATE:	Employee{id=46, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:33:17 IST 2024] DELETE:	Employee with ID 46 deleted
+[Wed Dec 18 12:38:07 IST 2024] ADD:		Employee{id=47, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:38:07 IST 2024] UPDATE:	Employee{id=47, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:38:07 IST 2024] DELETE:	Employee with ID 47 deleted
+[Wed Dec 18 12:39:19 IST 2024] ADD:		Employee{id=48, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:39:19 IST 2024] UPDATE:	Employee{id=48, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:39:19 IST 2024] DELETE:	Employee with ID 48 deleted
+[Wed Dec 18 12:45:39 IST 2024] ADD:		Employee{id=49, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:45:39 IST 2024] UPDATE:	Employee{id=49, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:45:39 IST 2024] DELETE:	Employee with ID 49 deleted
+[Wed Dec 18 12:46:25 IST 2024] ADD:		Employee{id=50, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:46:25 IST 2024] UPDATE:	Employee{id=50, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:46:25 IST 2024] DELETE:	Employee with ID 50 deleted
+[Wed Dec 18 12:47:17 IST 2024] ADD:		Employee{id=51, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:47:17 IST 2024] UPDATE:	Employee{id=51, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:47:17 IST 2024] DELETE:	Employee with ID 51 deleted
+[Wed Dec 18 12:52:44 IST 2024] ADD:		Employee{id=52, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:52:44 IST 2024] UPDATE:	Employee{id=52, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:52:44 IST 2024] DELETE:	Employee with ID 52 deleted
+[Wed Dec 18 12:57:35 IST 2024] ADD:		Employee{id=53, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 12:57:35 IST 2024] UPDATE:	Employee{id=53, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 12:57:36 IST 2024] DELETE:	Employee with ID 53 deleted
+[Wed Dec 18 13:05:01 IST 2024] ADD:		Employee{id=55, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 13:05:01 IST 2024] UPDATE:	Employee{id=55, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 13:05:01 IST 2024] DELETE:	Employee with ID 55 deleted
+[Wed Dec 18 13:05:32 IST 2024] ADD:		Employee{id=56, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 13:05:32 IST 2024] UPDATE:	Employee{id=56, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 13:05:32 IST 2024] DELETE:	Employee with ID 56 deleted
+[Wed Dec 18 13:06:03 IST 2024] ADD:		Employee{id=57, fullName='John Doe', phoneNumber='1234567890', employeeRole=MANAGER, branchId=11}
+[Wed Dec 18 13:06:03 IST 2024] UPDATE:	Employee{id=57, fullName='John Doe', phoneNumber='1234567890', employeeRole=EMPLOYEE, branchId=11}
+[Wed Dec 18 13:06:03 IST 2024] DELETE:	Employee with ID 57 deleted
