@@ -9,6 +9,10 @@ public class Customer
     String phone_number;
     CustomerType type;
 
+    public Customer()
+    {
+    }
+
     public Customer(String full_name, String phone_number, CustomerType type)
     {
         setFullName(full_name);

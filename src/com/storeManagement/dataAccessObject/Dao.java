@@ -12,7 +12,7 @@ public interface Dao<T> {
     T get(int id)
             throws SQLException;
     List<T> getList()
-            throws SQLException, Exception;
+            throws SQLException;
     void update(T obj)
             throws SQLException;
 }

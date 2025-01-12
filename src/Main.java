@@ -1,49 +1,71 @@
-import java.sql.SQLException;
-import java.util.List;
+import com.storeManagement.dataAccessObject.*;
+import com.storeManagement.model.User;
 
-import com.storeManagement.dataAccessObject.EmployeeDao;
-import com.storeManagement.model.Employee;
-import com.storeManagement.utils.Constants;
+import java.util.Scanner;
+
+import static java.lang.System.exit;
 
 public class Main
 {
+
     public static void main(String[] args)
     {
-        Employee emp = new Employee("John Doe", "1234567890", Constants.EmployeeRole.MANAGER, 11);
-        EmployeeDao empDao = new EmployeeDao();
+        UserDao udao = new UserDao();
+        BranchDao bdao = new BranchDao();
+        CustomerDao cdao = new CustomerDao();
+        EmployeeDao edao = new EmployeeDao();
+        ProductDao pdao = new ProductDao();
+        SaleDao sdao = new SaleDao();
 
-        try
+        User loggedUser = new User();
+
+        Scanner s = new Scanner(System.in);
+        int choice;
+
+        do
         {
-            // add
-            System.out.println("Adding employee...");
-            empDao.add(emp);
-            // read
-            System.out.println("Reading employee...");
-            Employee temp = empDao.get(emp.getId());
-            System.out.println(temp);
-            // read all
-            System.out.println("Reading all employees...");
-            List<Employee> employees = empDao.getList();
-            for (Employee e : employees)
+            System.out.println("\n\nLOGIN MENU");
+            System.out.println("1. Login");
+            System.out.println("2. Exit");
+
+            System.out.print("Enter choice: ");
+            choice = s.nextInt();
+
+            switch (choice)
             {
-                System.out.println(e);
-            }
-            // update
-            System.out.println("Updating employee...");
-            temp.setRole(Constants.EmployeeRole.EMPLOYEE);
-            empDao.update(temp);
-            // delete
-            System.out.println("Deleting employee...");
-            empDao.delete(temp.getId());
+                case 1:
+                    System.out.println("\n\nLOGIN");
+                    System.out.print("Enter username: ");
+                    String username = s.next();
+                    System.out.print("Enter password: ");
+                    String password = s.next();
 
-        }
-        catch (SQLException e)
-        {
-            System.out.println("SQLException: " + e.getMessage());
-        }
-        catch (Exception e)
-        {
-            System.out.println("Exception: " + e.getMessage());
-        }
+                    try
+                    {
+                        if (udao.authenticateUser(username, password))
+                        {
+                            loggedUser = udao.getByUsername(username);
+                            System.out.println("Login successful");
+                            choice = -1;
+                        } else
+                        {
+                            System.out.println("Invalid username or password");
+                        }
+                    } catch (Exception e)
+                    {
+                        System.out.println("An error occurred while logging in");
+                    }
+
+                    break;
+                case 2:
+                    System.out.println("Exiting...");
+                    exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        } while (choice != -1);
+
+
     }
 }

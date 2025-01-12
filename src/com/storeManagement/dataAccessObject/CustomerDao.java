@@ -77,7 +77,7 @@ public class CustomerDao implements Dao<Customer>
     }
 
     @Override
-    public List<Customer> getList() throws SQLException, Exception
+    public List<Customer> getList() throws SQLException
     {
         String query = "SELECT * FROM Customers";
         PreparedStatement ps = con.prepareStatement(query);
@@ -90,7 +90,8 @@ public class CustomerDao implements Dao<Customer>
 
         if (customers.isEmpty())
         {
-            throw new Exception("No customers found");
+            // TODO : create custom exception....
+            //throw new Exception("No customers found");
         }
 
         return customers;

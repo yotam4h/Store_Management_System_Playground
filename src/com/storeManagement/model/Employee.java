@@ -9,7 +9,8 @@ public class Employee {
     EmployeeRole role;
     int branchId;
 
-    // Parameterized Constructor
+    public Employee() {}
+
     public Employee(int id, String fullName, String phoneNumber, EmployeeRole role, int branchId) {
         setId(id);
         setFullName(fullName);

@@ -76,7 +76,7 @@ public class BranchDao implements Dao<Branch>
     }
 
     @Override
-    public List<Branch> getList() throws SQLException, Exception
+    public List<Branch> getList() throws SQLException
     {
         String query = "SELECT * FROM Branches";
         PreparedStatement ps = con.prepareStatement(query);
@@ -90,7 +90,8 @@ public class BranchDao implements Dao<Branch>
 
         if (branches.isEmpty())
         {
-            throw new Exception("No branches found");
+            // TODO : create custom exception....
+            //throw new Exception("No branches found");
         }
 
         return branches;

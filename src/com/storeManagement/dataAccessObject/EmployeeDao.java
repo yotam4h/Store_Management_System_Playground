@@ -100,7 +100,7 @@ public class EmployeeDao implements Dao<Employee>
     }
 
     @Override
-    public List<Employee> getList() throws SQLException, Exception
+    public List<Employee> getList() throws SQLException
     {
         String query = "SELECT * FROM Employees";
         PreparedStatement ps = con.prepareStatement(query);
@@ -114,7 +114,8 @@ public class EmployeeDao implements Dao<Employee>
 
         if (employees.isEmpty())
         {
-            throw new Exception("No employees found");
+            // TODO : create custom exception....
+            //throw new Exception("No employees found");
         }
 
         return employees;
