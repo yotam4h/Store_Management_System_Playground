@@ -57,6 +57,7 @@ public class SaleDao implements Dao<Sale>
             if (rs.next())
             {
                 sale.setId(rs.getInt(1));
+                sale.setSaleDate(rs.getTimestamp("sale_date"));
             }
         } else {
             throw new SQLException("Sale not added");
@@ -93,7 +94,7 @@ public class SaleDao implements Dao<Sale>
         ResultSet rs = ps.executeQuery();
         if (rs.next())
         {
-            return new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"));
+            return new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getTimestamp("date"));
         }
 
         throw new SQLException("Sale not found");
@@ -151,11 +152,12 @@ public class SaleDao implements Dao<Sale>
         return sales;
     }
 
-    public List<Sale> getSalesByCustomer(int customerId) throws SQLException
+
+    public List<Sale> getSalesByProduct(int productId) throws SQLException
     {
-        String query = "SELECT * FROM Sales WHERE customer_id = ?";
+        String query = "SELECT * FROM Sales WHERE product_id = ?";
         PreparedStatement ps = con.prepareStatement(query);
-        ps.setInt(1, customerId);
+        ps.setInt(1, productId);
 
         ResultSet rs = ps.executeQuery();
         List<Sale> sales = new ArrayList<>();
@@ -167,11 +169,11 @@ public class SaleDao implements Dao<Sale>
         return sales;
     }
 
-    public List<Sale> getSalesByProduct(int productId) throws SQLException
+    public List<Sale> getSalesByCategory(String category) throws SQLException
     {
-        String query = "SELECT * FROM Sales WHERE product_id = ?";
+        String query = "SELECT * FROM Sales WHERE product_id IN (SELECT id FROM Products WHERE category = ?)";
         PreparedStatement ps = con.prepareStatement(query);
-        ps.setInt(1, productId);
+        ps.setString(1, category);
 
         ResultSet rs = ps.executeQuery();
         List<Sale> sales = new ArrayList<>();
