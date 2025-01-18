@@ -145,8 +145,8 @@ public class Server
         ObjectInputStream sInput;
         ObjectOutputStream sOutput;
         int id;
-        String msg;
         String username, password;
+        Constants.EmployeeRole role;
 
         ClientThread(Socket socket)
         {
@@ -182,6 +182,9 @@ public class Server
                 display(username + " just connected.");
                 writeMsg("SUCCESS");
 
+                role = Constants.EmployeeRole.valueOf(userDao.getByUsername(username).getRole());
+
+                writeMsg(role.toString());
             }
             catch (IOException e)
             {
@@ -190,24 +193,34 @@ public class Server
             }
             catch (ClassNotFoundException e)
             {
+            } catch (SQLException e)
+            {
+                throw new RuntimeException(e);
             }
         }
 
         public void run()
         {
-            try {
-                switch (userDao.getByUsername(username).getRole())
+            boolean keepGoing = true;
+
+            while(keepGoing)
+            {
+                // IF SERVER GOT "DISCONNECT" MESSAGE
+                try
                 {
-                    case "ADMIN":
-                        adminMenu();
-                        break;
-                    case "MANAGER":
-                        break;
-                    case "EMPLOYEE":
-                        break;
+                    String msg = (String) sInput.readObject();
+                    if (msg.equalsIgnoreCase("DISCONNECT"))
+                    {
+                        keepGoing = false;
+                    }
+                } catch (IOException e)
+                {
+                    display(username + " Exception reading Streams: " + e);
+                    break;
+                } catch (ClassNotFoundException e)
+                {
+                    break;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
             remove(id);
@@ -252,137 +265,5 @@ public class Server
             return true;
         }
 
-        private void adminMenu()
-        {
-            keepGoing = true;
-            do
-            {
-                writeMsg("1. Add user\n2. Remove user\n3. Update user\n4. View users\n5. Logout");
-                try
-                {
-                    String option = (String) sInput.readObject();
-                    switch (option)
-                    {
-                        case "1":
-                        {
-                            writeMsg("\n\nADD USER MENU");
-                            writeMsg("Enter username: ");
-                            String username = (String) sInput.readObject();
-                            writeMsg("Enter password: ");
-                            String password = (String) sInput.readObject();
-                            writeMsg("Choose role: ");
-                            writeMsg("1. ADMIN\n2. MANAGER\n3. EMPLOYEE");
-                            String role = (String) sInput.readObject();
-                            switch (role)
-                            {
-                                case "1":
-                                    role = "ADMIN";
-                                    break;
-                                case "2":
-                                    role = "MANAGER";
-                                    break;
-                                case "3":
-                                    role = "EMPLOYEE";
-                                    break;
-                            }
-                            writeMsg("Enter branch id: ");
-                            int branchId = Integer.parseInt((String) sInput.readObject());
-
-                            try
-                            {
-                                userDao.add(new User(username, password, Constants.EmployeeRole.valueOf(role), branchId));
-                            } catch (SQLException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            break;
-                        }
-                        case "2":
-                        {
-                            writeMsg("\n\nREMOVE USER MENU");
-                            writeMsg("Enter username id: ");
-                            int id = (int) sInput.readObject();
-                            try
-                            {
-                                userDao.delete(id);
-                            } catch (SQLException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            break;
-                        }
-                        case "3":
-                        {
-                            writeMsg("\n\nUPDATE USER MENU");
-                            writeMsg("Enter username id: ");
-                            int id = Integer.parseInt((String) sInput.readObject());
-                            writeMsg("Enter new username: ");
-                            String username = (String) sInput.readObject();
-                            writeMsg("Enter new password: ");
-                            String password = (String) sInput.readObject();
-                            writeMsg("Choose new role: ");
-                            writeMsg("1. ADMIN\n2. MANAGER\n3. EMPLOYEE");
-                            String role = (String) sInput.readObject();
-                            switch (role)
-                            {
-                                case "1":
-                                    role = "ADMIN";
-                                    break;
-                                case "2":
-                                    role = "MANAGER";
-                                    break;
-                                case "3":
-                                    role = "EMPLOYEE";
-                                    break;
-                            }
-                            writeMsg("Enter new branch id: ");
-                            int branchId = (int) sInput.readObject();
-
-                            try
-                            {
-                                userDao.update(new User(id, username, password, Constants.EmployeeRole.valueOf(role), branchId));
-                            } catch (SQLException e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                        }
-                        case "4":
-                        {
-                            writeMsg("\n\nVIEW USERS MENU");
-                            try
-                            {
-                                List<User> users = userDao.getList();
-                                for (User user : users)
-                                {
-                                    writeMsg(user.toString());
-                                }
-                            } catch (SQLException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            break;
-                        }
-                        case "5":
-                            keepGoing = false;
-                            break;
-                    }
-                }
-                catch (IOException e)
-                {
-                    display("Exception reading streams: " + e);
-                    break;
-                }
-                catch (ClassNotFoundException e)
-                {
-                    e.printStackTrace();
-                }
-            } while(keepGoing);
-
-            writeMsg("LOGOUT");
-            remove(id);
-            close();
-        }
     }
 }

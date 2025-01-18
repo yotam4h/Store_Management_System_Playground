@@ -2,6 +2,8 @@ package com.storeManagement.model;
 
 import com.storeManagement.utils.Constants.EmployeeRole;
 
+import java.util.Scanner;
+
 public class Employee {
     int id;
     String fullName;
@@ -53,20 +55,80 @@ public class Employee {
         this.id = id;
     }
 
+    public void setId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the employee id: ");
+        this.id = s.nextInt();
+    }
+
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public void setFullName()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the employee full name: ");
+        this.fullName = s.nextLine();
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
+    public void setPhoneNumber()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the employee phone number: ");
+        this.phoneNumber = s.nextLine();
+    }
+
     public void setRole(EmployeeRole role) {
         this.role = role;
     }
 
+    public void setRole()
+    {
+        Scanner s = new Scanner(System.in);
+        boolean validRole = false;
+
+        while (!validRole)
+        {
+            System.out.println("Choose role: ");
+            System.out.println("1. ADMIN\n2. MANAGER\n3. EMPLOYEE");
+            System.out.println("Enter role: ");
+            int role = s.nextInt();
+            switch (role)
+            {
+                case 1:
+                    this.role = EmployeeRole.ADMIN;
+                    validRole = true;
+                    break;
+                case 2:
+                    this.role = EmployeeRole.MANAGER;
+                    validRole = true;
+                    break;
+                case 3:
+                    this.role = EmployeeRole.EMPLOYEE;
+                    validRole = true;
+                    break;
+                default:
+                    System.out.println("Invalid role.");
+                    break;
+            }
+        }
+    }
+
     public void setBranchId(int branchId) {
         this.branchId = branchId;
+    }
+
+    public void setBranchId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the employee branch id: ");
+        this.branchId = s.nextInt();
     }
 
     @Override

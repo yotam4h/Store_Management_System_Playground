@@ -1,6 +1,9 @@
 package com.storeManagement.model;
 
+import com.storeManagement.utils.Constants;
 import com.storeManagement.utils.Constants.Category;
+
+import java.util.Scanner;
 
 public class Product
 {
@@ -10,6 +13,8 @@ public class Product
     double price;
     int stock_quantity;
     int branch_id;
+
+    public Product() {}
 
     public Product(int id, String name, Category category, double price, int stock_quantity, int branch_id)
     {
@@ -21,7 +26,6 @@ public class Product
         setBranchId(branch_id);
     }
 
-    // Constructor for adding a new Product
     public Product(String name, Category category, double price, int stock_quantity, int branch_id)
     {
         setName(name);
@@ -36,9 +40,23 @@ public class Product
         this.id = id;
     }
 
+    public void setId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the product id: ");
+        this.id = s.nextInt();
+    }
+
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public void setName()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the product name: ");
+        this.name = s.nextLine();
     }
 
     public void setCategory(Category category)
@@ -46,9 +64,55 @@ public class Product
         this.category = category;
     }
 
+    public void setCategory()
+    {
+        Scanner s = new Scanner(System.in);
+        boolean validCategory = false;
+
+        while (!validCategory)
+        {
+            System.out.println("Choose category: ");
+            for (int i = 0; i < Category.values().length; i++)
+            {
+                System.out.println((i + 1) + ". " + Category.values()[i]);
+            }
+            System.out.println("Enter role: ");
+            int role = s.nextInt();
+            switch (role)
+            {
+                case 1:
+                    this.category = Category.SHIRT;
+                    validCategory = true;
+                    break;
+                case 2:
+                    this.category = Category.PANTS;
+                    validCategory = true;
+                    break;
+                case 3:
+                    this.category = Category.SHOES;
+                    validCategory = true;
+                    break;
+                case 4:
+                    this.category = Category.ACCESSORIES;
+                    validCategory = true;
+                    break;
+                default:
+                    System.out.println("Invalid category.");
+                    break;
+            }
+        }
+    }
+
     public void setPrice(double price)
     {
         this.price = price;
+    }
+
+    public void setPrice()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the product price: ");
+        this.price = s.nextDouble();
     }
 
     public void setStockQuantity(int stock_quantity)
@@ -56,9 +120,23 @@ public class Product
         this.stock_quantity = stock_quantity;
     }
 
+    public void setStockQuantity()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the product stock quantity: ");
+        this.stock_quantity = s.nextInt();
+    }
+
     public void setBranchId(int branch_id)
     {
         this.branch_id = branch_id;
+    }
+
+    public void setBranchId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the product branch id: ");
+        this.branch_id = s.nextInt();
     }
 
     public int getId()

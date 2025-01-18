@@ -1,5 +1,7 @@
 package com.storeManagement.model;
 
+import java.util.Scanner;
+
 public class Sale
 {
     int id;
@@ -8,6 +10,8 @@ public class Sale
     int quantity;
     int branch_id;
     java.sql.Timestamp sale_date;
+
+    public Sale() {}
 
     public Sale(int customer_id, int product_id, int quantity, int branch_id)
     {
@@ -31,9 +35,23 @@ public class Sale
         this.id = id;
     }
 
+    public void setId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the sale id: ");
+        this.id = s.nextInt();
+    }
+
     public void setCustomerId(int customer_id)
     {
         this.customer_id = customer_id;
+    }
+
+    public void setCustomerId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the customer id: ");
+        this.customer_id = s.nextInt();
     }
 
     public void setProductId(int product_id)
@@ -41,14 +59,35 @@ public class Sale
         this.product_id = product_id;
     }
 
+    public void setProductId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the product id: ");
+        this.product_id = s.nextInt();
+    }
+
     public void setQuantity(int quantity)
     {
         this.quantity = quantity;
     }
 
+    public void setQuantity()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the quantity: ");
+        this.quantity = s.nextInt();
+    }
+
     public void setBranchId(int branch_id)
     {
         this.branch_id = branch_id;
+    }
+
+    public void setBranchId()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the branch id: ");
+        this.branch_id = s.nextInt();
     }
 
     public int getId() {return id;}
