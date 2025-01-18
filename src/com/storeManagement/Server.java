@@ -119,6 +119,39 @@ public class Server
         }
     }
 
+    private synchronized void directMessage(String message, String username)
+    {
+        String time = new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date());
+        String messageLf = time + " " + message + "\n";
+        System.out.print(messageLf);
+        for(int i = clients.size(); --i >= 0;)
+        {
+            ClientThread ct = clients.get(i);
+            if(ct.username.equals(username))
+            {
+                if(!ct.writeMsg(messageLf))
+                {
+                    clients.remove(i);
+                    display("Disconnected Client " + ct.username + " removed from list.");
+                }
+            }
+        }
+    }
+
+    // find user from another branch who's not in chat
+    private synchronized ClientThread findUser(int branchId)
+    {
+        for(int i = 0; i < clients.size(); ++i)
+        {
+            ClientThread ct = clients.get(i);
+            if(ct.branchId != branchId && !ct.inChat)
+            {
+                return ct;
+            }
+        }
+        return null;
+    }
+
     private synchronized void remove(int id)
     {
         for(int i = 0; i < clients.size(); ++i)
@@ -147,6 +180,9 @@ public class Server
         int id;
         String username, password;
         Constants.EmployeeRole role;
+        int branchId;
+        boolean inChat;
+        ClientThread recipient;
 
         ClientThread(Socket socket)
         {
@@ -185,6 +221,10 @@ public class Server
                 role = Constants.EmployeeRole.valueOf(userDao.getByUsername(username).getRole());
 
                 writeMsg(role.toString());
+
+                branchId = userDao.getByUsername(username).getBranchId();
+
+                writeMsg(String.valueOf(branchId));
             }
             catch (IOException e)
             {
@@ -209,9 +249,36 @@ public class Server
                 try
                 {
                     String msg = (String) sInput.readObject();
-                    if (msg.equalsIgnoreCase("DISCONNECT"))
+                    switch (msg)
                     {
-                        keepGoing = false;
+                        case "DISCONNECT": {
+                            keepGoing = false;
+                            break;
+                        }
+                        case "START_CHAT": {
+                            inChat = true;
+                            recipient = findUser(branchId);
+                            if (recipient == null)
+                            {
+                                writeMsg("NO_USER");
+                                inChat = false;
+                            } else
+                            {
+                                recipient.inChat = true;
+                                recipient.recipient = this;
+                                writeMsg(recipient.username);
+                                recipient.writeMsg(username);
+                            }
+                            break;
+                        }
+                        case "END_CHAT": {
+                            inChat = false;
+                            recipient.inChat = false;
+                            recipient.recipient = null;
+                            recipient = null;
+                            break;
+                        }
+
                     }
                 } catch (IOException e)
                 {

@@ -1,10 +1,6 @@
 package com.storeManagement;
 
-import com.storeManagement.dataAccessObject.UserDao;
-import com.storeManagement.dataAccessObject.BranchDao;
-import com.storeManagement.dataAccessObject.ProductDao;
-import com.storeManagement.dataAccessObject.CustomerDao;
-import com.storeManagement.dataAccessObject.EmployeeDao;
+import com.storeManagement.dataAccessObject.*;
 import com.storeManagement.model.Branch;
 import com.storeManagement.model.User;
 import com.storeManagement.model.Product;
@@ -29,6 +25,7 @@ public class Client
     Socket socket;
     String server, username, password;
     Constants.EmployeeRole role;
+    int branchId;
     int port;
 
     Client(String server, int port)
@@ -113,7 +110,7 @@ public class Client
                     break;
             }
 
-//            s.close();
+            branchId = Integer.parseInt((String) sInput.readObject());
         }
         catch (IOException eIO)
         {
@@ -125,7 +122,7 @@ public class Client
             e.printStackTrace();
         }
 
-        new ListenFromServer().start();
+//        new ListenFromServer().start();
 
         return true;
     }
@@ -164,6 +161,30 @@ public class Client
         catch(Exception e) {}
     }
 
+//    class ListenFromServer extends Thread
+//    {
+//        public void run()
+//        {
+//            while(true)
+//            {
+//                try
+//                {
+//                    String msg = (String) sInput.readObject();
+//                    System.out.println(msg);
+//                }
+//                catch(IOException e)
+//                {
+//                    display("Server has closed the connection: " + e);
+//                    break;
+//                }
+//                catch(ClassNotFoundException e2)
+//                {
+//                    display("Class not found: " + e2);
+//                }
+//            }
+//        }
+//    }
+
     public static void main(String[] args)
     {
         int portNumber = 1500;
@@ -184,44 +205,18 @@ public class Client
                 adminMenu();
                 break;
             case "MANAGER":
-                managerMenu();
+                managerMenu(client.branchId);
                 break;
             case "EMPLOYEE":
-                employeeMenu();
+                employeeMenu(client.branchId);
                 break;
             default:
                 System.out.println("Unknown role.");
                 break;
         }
 
-
-
         client.disconnect();
         exit(0);
-    }
-
-    class ListenFromServer extends Thread
-    {
-        public void run()
-        {
-            while(true)
-            {
-                try
-                {
-                    String msg = (String) sInput.readObject();
-                    System.out.println(msg);
-                }
-                catch(IOException e)
-                {
-                    display("Server has closed the connection: " + e);
-                    break;
-                }
-                catch(ClassNotFoundException e2)
-                {
-                    display("Class not found: " + e2);
-                }
-            }
-        }
     }
 
 
@@ -230,17 +225,16 @@ public class Client
         Scanner s = new Scanner(System.in);
         int choice = 0;
 
-        while(choice != 9)
+        while(choice != 7)
         {
             System.out.println("\n\nADMIN MENU");
             System.out.println("1. User");
-            System.out.println("2. Product");
-            System.out.println("3. Customer");
-            System.out.println("4. Report");
-            System.out.println("5. Sale");
+            System.out.println("2. Branch");
+            System.out.println("3. Employee");
+            System.out.println("4. Product");
+            System.out.println("5. Customer");
             System.out.println("6. Chat");
-            System.out.println("7. Branch");
-            System.out.println("8. Exit");
+            System.out.println("7. Exit");
 
             System.out.print("Enter your choice: ");
             choice = s.nextInt();
@@ -248,29 +242,25 @@ public class Client
             switch (choice)
             {
                 case 1:
-                    userMenu();
+                    userDaoMenu();
                     break;
                 case 2:
-                    productMenu();
+                    branchDaoMenu();
                     break;
                 case 3:
-                    customerMenu();
+                    employeeDaoMenu();
                     break;
                 case 4:
-                    reportMenu();
+                    productDaoMenu();
                     break;
                 case 5:
-                    saleMenu();
+                    customerDaoMenu();
                     break;
                 case 6:
                     chatMenu();
                     break;
                 case 7:
-                    branchMenu();
-                    break;
-                case 8:
                     System.out.println("\n\nEXITING...");
-                    choice = 9;
                     break;
                 default:
                     System.out.println("Invalid choice.");
@@ -279,28 +269,812 @@ public class Client
         }
     }
 
-    static void managerMenu()
-    {}
+    static void managerMenu(int branchId)
+    {
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
 
-    static void employeeMenu()
-    {}
+        while(choice != 7)
+        {
+            System.out.println("\n\nMANAGER MENU");
+            System.out.println("1. Employee");
+            System.out.println("2. Product");
+            System.out.println("3. Customer");
+            System.out.println("4. Sale");
+            System.out.println("5. Report");
+            System.out.println("6. Chat");
+            System.out.println("7. Exit");
 
-    static void productMenu()
-    {}
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
 
-    static void customerMenu()
-    {}
+            switch (choice)
+            {
+                case 1:
+                    employeeDaoMenu(Constants.EmployeeRole.EMPLOYEE, branchId);
+                    break;
+                case 2:
+                    productDaoMenu(branchId);
+                    break;
+                case 3:
+                    customerDaoMenu();
+                    break;
+                case 4:
+                    saleDaoMenu(branchId);
+                    break;
+                case 5:
+                    reportMenu(branchId);
+                    break;
+                case 6:
+                    chatMenu();
+                    break;
+                case 7:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
 
-    static void reportMenu()
-    {}
+    static void employeeMenu(int branchId)
+    {
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
 
-    static void saleMenu()
-    {}
+        while(choice != 5)
+        {
+            System.out.println("\n\nEMPLOYEE MENU");
+            System.out.println("1. Customer");
+            System.out.println("2. Sale");
+            System.out.println("3. Chat");
+            System.out.println("4. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice)
+            {
+                case 1:
+                    customerDaoMenu();
+                    break;
+                case 2:
+                    saleDaoMenu(branchId);
+                    break;
+                case 3:
+                    chatMenu();
+                    break;
+                case 4:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
 
     static void chatMenu()
-    {}
+    {
 
-    static void branchMenu()
+    }
+
+    static void reportMenu(int branchId)
+    {
+        SaleDao saleDao = new SaleDao();
+        ProductDao productDao = new ProductDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while(choice != 4)
+        {
+            System.out.println("\n\nREPORT MENU");
+            System.out.println("1. Sales by branch");
+            System.out.println("2. Sales by product");
+            System.out.println("3. Sales by category");
+            System.out.println("4. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch(choice) {
+                case 1: {
+                    System.out.println("\n\nSALES BY BRANCH");
+                    List<Sale> sales = null;
+                    try {
+                        sales = saleDao.getSalesByBranch(branchId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    double totalSales = 0;
+                    double totalSum = 0;
+                    for (Sale sale : sales) {
+                        Product product = null;
+                        try {
+                            product = productDao.get(sale.getProductId());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        totalSales += sale.getQuantity();
+                        totalSum += sale.getQuantity() * product.getPrice();
+
+                        System.out.println("************************");
+                        System.out.println("Product: " + product.getName());
+                        System.out.println("Quantity: " + sale.getQuantity());
+                        System.out.println("Sum: " + sale.getQuantity() * product.getPrice());
+
+                    }
+
+                    System.out.println("************************");
+                    System.out.println("Total sales: " + totalSales);
+                    System.out.println("Total sum: " + totalSum);
+                }
+                    break;
+                case 2: {
+                    System.out.println("\n\nSALES BY PRODUCT");
+                    System.out.println("Enter the product id: ");
+                    int productId = s.nextInt();
+                    List<Sale> sales = null;
+                    try {
+                        sales = saleDao.getSalesByProduct(productId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    double totalSales = 0;
+                    double totalSum = 0;
+                    for (Sale sale : sales) {
+                        Product product = null;
+                        try {
+                            product = productDao.get(sale.getProductId());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        totalSales += sale.getQuantity();
+                        totalSum += sale.getQuantity() * product.getPrice();
+
+                        System.out.println("************************");
+                        System.out.println("Product: " + product.getName());
+                        System.out.println("Quantity: " + sale.getQuantity());
+                        System.out.println("Sum: " + sale.getQuantity() * product.getPrice());
+                    }
+
+                    System.out.println("Total sales: " + totalSales);
+                    System.out.println("Total sum: " + totalSum);
+                }
+                    break;
+                case 3: {
+                    System.out.println("\n\nSALES BY CATEGORY");
+                    System.out.println("Enter the category: ");
+                    String category = s.nextLine();
+                    List<Sale> sales = null;
+                    try {
+                        sales = saleDao.getSalesByCategory(category);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    double totalSales = 0;
+                    double totalSum = 0;
+                    for (Sale sale : sales) {
+                        Product product = null;
+                        try {
+                            product = productDao.get(sale.getProductId());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        totalSales += sale.getQuantity();
+                        totalSum += sale.getQuantity() * product.getPrice();
+
+                        System.out.println("************************");
+                        System.out.println("Product: " + product.getName());
+                        System.out.println("Quantity: " + sale.getQuantity());
+                        System.out.println("Sum: " + sale.getQuantity() * product.getPrice());
+                    }
+
+                    System.out.println("Total sales: " + totalSales);
+                    System.out.println("Total sum: " + totalSum);
+
+                    break;
+                }
+                case 4:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void saleDaoMenu(int branchId)
+    {
+        SaleDao saleDao = new SaleDao();
+        ProductDao productDao = new ProductDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while (choice != 6)
+        {
+            System.out.println("\n\nSALE MENU");
+            System.out.println("1. Add sale");
+            System.out.println("2. Update sale");
+            System.out.println("3. Delete sale");
+            System.out.println("4. View sales");
+            System.out.println("5. View Products");
+            System.out.println("6. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\n\nADD SALE");
+                    Sale newSale = new Sale();
+                    newSale.setCustomerId();
+                    newSale.setProductId();
+                    try {
+                        newSale.setQuantity();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    newSale.setBranchId(branchId);
+                    try {
+                        saleDao.add(newSale);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    System.out.println("\n\nUPDATE SALE");
+                    System.out.println("Enter the sale id: ");
+                    int id = s.nextInt();
+                    s.nextLine();
+                    Sale sale = null;
+                    try {
+                        sale = saleDao.get(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (sale == null) {
+                        System.out.println("Sale not found.");
+                        break;
+                    }
+                    System.out.println("Current sale details: " + sale.toString());
+                    sale.setCustomerId();
+                    sale.setProductId();
+                    try {
+                        sale.setQuantity();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    sale.setBranchId(branchId);
+                    try {
+                        saleDao.update(sale);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 3:
+                    System.out.println("\n\nDELETE SALE");
+                    System.out.println("Enter the sale id: ");
+                    id = s.nextInt();
+                    try {
+                        saleDao.delete(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    System.out.println("\n\nVIEW SALES");
+                    List<Sale> sales = null;
+                    try {
+                        sales = saleDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (sales == null) {
+                        System.out.println("No sales found.");
+                        break;
+                    }
+                    for (Sale sa : sales) {
+                        System.out.println(sa.toString());
+                    }
+                    break;
+                case 5:
+                    System.out.println("\n\nVIEW PRODUCTS");
+                    List<Product> products = null;
+                    try {
+                        products = productDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (products == null) {
+                        System.out.println("No products found.");
+                        break;
+                    }
+                    for (Product p : products) {
+                        if(p.getBranchId() == branchId)
+                            System.out.println(p.toString());
+                    }
+                    break;
+                case 6:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void employeeDaoMenu(Constants.EmployeeRole role, int branchId)
+    {
+        EmployeeDao employeeDao = new EmployeeDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while(choice != 5) {
+            System.out.println("\n\nEMPLOYEE MENU");
+            System.out.println("1. Add employee");
+            System.out.println("2. Update employee");
+            System.out.println("3. Delete employee");
+            System.out.println("4. View employees");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\n\nADD EMPLOYEE");
+                    Employee newEmployee = new Employee();
+                    newEmployee.setFullName();
+                    newEmployee.setPhoneNumber();
+                    newEmployee.setRole(role);
+                    newEmployee.setBranchId(branchId);
+                    try {
+                        employeeDao.add(newEmployee);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    System.out.println("\n\nUPDATE EMPLOYEE");
+                    System.out.println("Enter the employee id: ");
+                    int id = s.nextInt();
+                    s.nextLine();
+                    Employee employee = null;
+                    try {
+                        employee = employeeDao.get(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (employee == null) {
+                        System.out.println("Employee not found.");
+                        break;
+                    }
+                    System.out.println("Current employee details: " + employee.toString());
+                    employee.setFullName();
+                    employee.setPhoneNumber();
+                    employee.setRole(role);
+                    employee.setBranchId(branchId);
+                    try {
+                        employeeDao.update(employee);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 3:
+                    System.out.println("\n\nDELETE EMPLOYEE");
+                    System.out.println("Enter the employee id: ");
+                    id = s.nextInt();
+                    try {
+                        employeeDao.delete(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    System.out.println("\n\nVIEW EMPLOYEES");
+                    List<Employee> employees = null;
+                    try {
+                        employees = employeeDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (employees == null) {
+                        System.out.println("No employees found.");
+                        break;
+                    }
+                    for (Employee e : employees) {
+                        System.out.println(e.toString());
+                    }
+                    break;
+                case 5:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void employeeDaoMenu()
+    {
+        EmployeeDao employeeDao = new EmployeeDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while(choice != 5) {
+            System.out.println("\n\nEMPLOYEE MENU");
+            System.out.println("1. Add employee");
+            System.out.println("2. Update employee");
+            System.out.println("3. Delete employee");
+            System.out.println("4. View employees");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\n\nADD EMPLOYEE");
+                    Employee newEmployee = new Employee();
+                    newEmployee.setFullName();
+                    newEmployee.setPhoneNumber();
+                    newEmployee.setRole();
+                    newEmployee.setBranchId();
+                    try {
+                        employeeDao.add(newEmployee);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    System.out.println("\n\nUPDATE EMPLOYEE");
+                    System.out.println("Enter the employee id: ");
+                    int id = s.nextInt();
+                    s.nextLine();
+                    Employee employee = null;
+                    try {
+                        employee = employeeDao.get(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (employee == null) {
+                        System.out.println("Employee not found.");
+                        break;
+                    }
+                    System.out.println("Current employee details: " + employee.toString());
+                    employee.setFullName();
+                    employee.setPhoneNumber();
+                    employee.setRole();
+                    employee.setBranchId();
+                    try {
+                        employeeDao.update(employee);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 3:
+                    System.out.println("\n\nDELETE EMPLOYEE");
+                    System.out.println("Enter the employee id: ");
+                    id = s.nextInt();
+                    try {
+                        employeeDao.delete(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    System.out.println("\n\nVIEW EMPLOYEES");
+                    List<Employee> employees = null;
+                    try {
+                        employees = employeeDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (employees == null) {
+                        System.out.println("No employees found.");
+                        break;
+                    }
+                    for (Employee e : employees) {
+                        System.out.println(e.toString());
+                    }
+                    break;
+                case 5:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void productDaoMenu(int branchId)
+    {
+        ProductDao productDao = new ProductDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while(choice != 5) {
+            System.out.println("\n\nPRODUCT MENU");
+            System.out.println("1. Add product");
+            System.out.println("2. Update product");
+            System.out.println("3. Delete product");
+            System.out.println("4. View products");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\n\nADD PRODUCT");
+                    Product newProduct = new Product();
+                    newProduct.setName();
+                    newProduct.setCategory();
+                    newProduct.setPrice();
+                    newProduct.setStockQuantity();
+                    newProduct.setBranchId(branchId);
+                    try {
+                        productDao.add(newProduct);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    System.out.println("\n\nUPDATE PRODUCT");
+                    System.out.println("Enter the product id: ");
+                    int id = s.nextInt();
+                    s.nextLine();
+                    Product product = null;
+                    try {
+                        product = productDao.get(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (product == null) {
+                        System.out.println("Product not found.");
+                        break;
+                    }
+                    System.out.println("Current product details: " + product.toString());
+                    product.setName();
+                    product.setCategory();
+                    product.setPrice();
+                    product.setStockQuantity();
+                    product.setBranchId(branchId);
+                    try {
+                        productDao.update(product);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 3:
+                    System.out.println("\n\nDELETE PRODUCT");
+                    System.out.println("Enter the product id: ");
+                    id = s.nextInt();
+                    try {
+                        productDao.delete(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    System.out.println("\n\nVIEW PRODUCTS");
+                    List<Product> products = null;
+                    try {
+                        products = productDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (products == null) {
+                        System.out.println("No products found.");
+                        break;
+                    }
+                    for (Product p : products) {
+                        System.out.println(p.toString());
+                    }
+                    break;
+                case 5:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void productDaoMenu()
+    {
+        ProductDao productDao = new ProductDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while(choice != 5) {
+            System.out.println("\n\nPRODUCT MENU");
+            System.out.println("1. Add product");
+            System.out.println("2. Update product");
+            System.out.println("3. Delete product");
+            System.out.println("4. View products");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\n\nADD PRODUCT");
+                    Product newProduct = new Product();
+                    newProduct.setName();
+                    newProduct.setCategory();
+                    newProduct.setPrice();
+                    newProduct.setStockQuantity();
+                    newProduct.setBranchId();
+                    try {
+                        productDao.add(newProduct);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    System.out.println("\n\nUPDATE PRODUCT");
+                    System.out.println("Enter the product id: ");
+                    int id = s.nextInt();
+                    s.nextLine();
+                    Product product = null;
+                    try {
+                        product = productDao.get(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (product == null) {
+                        System.out.println("Product not found.");
+                        break;
+                    }
+                    System.out.println("Current product details: " + product.toString());
+                    product.setName();
+                    product.setCategory();
+                    product.setPrice();
+                    product.setStockQuantity();
+                    product.setBranchId();
+                    try {
+                        productDao.update(product);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 3:
+                    System.out.println("\n\nDELETE PRODUCT");
+                    System.out.println("Enter the product id: ");
+                    id = s.nextInt();
+                    try {
+                        productDao.delete(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    System.out.println("\n\nVIEW PRODUCTS");
+                    List<Product> products = null;
+                    try {
+                        products = productDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (products == null) {
+                        System.out.println("No products found.");
+                        break;
+                    }
+                    for (Product p : products) {
+                        System.out.println(p.toString());
+                    }
+                    break;
+                case 5:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void customerDaoMenu()
+    {
+        CustomerDao customerDao = new CustomerDao();
+        Scanner s = new Scanner(System.in);
+        int choice = 0;
+
+        while (choice != 5) {
+            System.out.println("\n\nCUSTOMER MENU");
+            System.out.println("1. Add customer");
+            System.out.println("2. Update customer");
+            System.out.println("3. Delete customer");
+            System.out.println("4. View customers");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            choice = s.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\n\nADD CUSTOMER");
+                    Customer newCustomer = new Customer();
+                    newCustomer.setFullName();
+                    newCustomer.setPhoneNumber();
+                    newCustomer.setType();
+                    try {
+                        customerDao.add(newCustomer);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2:
+                    System.out.println("\n\nUPDATE CUSTOMER");
+                    System.out.println("Enter the customer id: ");
+                    int id = s.nextInt();
+                    s.nextLine();
+                    Customer customer = null;
+                    try {
+                        customer = customerDao.get(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (customer == null) {
+                        System.out.println("Customer not found.");
+                        break;
+                    }
+                    System.out.println("Current customer details: " + customer.toString());
+                    customer.setFullName();
+                    customer.setPhoneNumber();
+                    customer.setType();
+                    try {
+                        customerDao.update(customer);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 3:
+                    System.out.println("\n\nDELETE CUSTOMER");
+                    System.out.println("Enter the customer id: ");
+                    id = s.nextInt();
+                    try {
+                        customerDao.delete(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    System.out.println("\n\nVIEW CUSTOMERS");
+                    List<Customer> customers = null;
+                    try {
+                        customers = customerDao.getList();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (customers == null) {
+                        System.out.println("No customers found.");
+                        break;
+                    }
+                    for (Customer c : customers) {
+                        System.out.println(c.toString());
+                    }
+                    break;
+                case 5:
+                    System.out.println("\n\nEXITING...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    static void branchDaoMenu()
     {
         BranchDao branchDao = new BranchDao();
         Scanner s = new Scanner(System.in);
@@ -308,7 +1082,7 @@ public class Client
 
         while (choice != 5)
         {
-            System.out.println("\n\nADMIN MENU");
+            System.out.println("\n\nBRANCH MENU");
             System.out.println("1. Add branch");
             System.out.println("2. Update branch");
             System.out.println("3. Delete branch");
@@ -395,7 +1169,6 @@ public class Client
                     break;
                 case 5:
                     System.out.println("\n\nEXITING...");
-                    choice = 5;
                     break;
                 default:
                     System.out.println("Invalid choice.");
@@ -404,7 +1177,7 @@ public class Client
         }
     }
 
-    static void userMenu()
+    static void userDaoMenu()
     {
         UserDao userDao = new UserDao();
         Scanner s = new Scanner(System.in);
@@ -412,7 +1185,7 @@ public class Client
 
         while(choice != 5)
         {
-            System.out.println("\n\nADMIN MENU");
+            System.out.println("\n\nUSER MENU");
             System.out.println("1. Add user");
             System.out.println("2. Update user");
             System.out.println("3. Delete user");
@@ -509,7 +1282,6 @@ public class Client
                     break;
                 case 5:
                     System.out.println("\n\nEXITING...");
-                    choice = 5;
                     break;
                 default:
                     System.out.println("Invalid choice.");
