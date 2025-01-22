@@ -127,7 +127,7 @@ public class Client
         return true;
     }
 
-    private void sendMessage(String msg)
+    public void sendMessage(String msg)
     {
         try
         {
@@ -138,6 +138,24 @@ public class Client
             display("Exception writing to server: " + e);
         }
     }
+
+    public String readMessage()
+    {
+        try
+        {
+            return (String) sInput.readObject();
+        }
+        catch(IOException e)
+        {
+            display("Exception reading from server: " + e);
+        }
+        catch(ClassNotFoundException e)
+        {
+            display("Class not found: " + e);
+        }
+        return null;
+    }
+
 
     public void disconnect()
     {
@@ -161,29 +179,34 @@ public class Client
         catch(Exception e) {}
     }
 
-//    class ListenFromServer extends Thread
-//    {
-//        public void run()
-//        {
-//            while(true)
-//            {
-//                try
-//                {
-//                    String msg = (String) sInput.readObject();
-//                    System.out.println(msg);
-//                }
-//                catch(IOException e)
-//                {
-//                    display("Server has closed the connection: " + e);
-//                    break;
-//                }
-//                catch(ClassNotFoundException e2)
-//                {
-//                    display("Class not found: " + e2);
-//                }
-//            }
-//        }
-//    }
+    class ListenFromServer extends Thread
+    {
+        public void run()
+        {
+            while(true)
+            {
+                try
+                {
+                    String msg = (String) sInput.readObject();
+                    if(msg.equals("CHAT_ENDED"))
+                    {
+                        display("Chat ended.");
+                        break;
+                    }
+                    System.out.println(msg);
+                }
+                catch(IOException e)
+                {
+                    display("Server has closed the connection: " + e);
+                    break;
+                }
+                catch(ClassNotFoundException e2)
+                {
+                    display("Class not found: " + e2);
+                }
+            }
+        }
+    }
 
     public static void main(String[] args)
     {
@@ -202,13 +225,13 @@ public class Client
         switch (client.role.toString())
         {
             case "ADMIN":
-                adminMenu();
+                adminMenu(client);
                 break;
             case "MANAGER":
-                managerMenu(client.branchId);
+                managerMenu(client);
                 break;
             case "EMPLOYEE":
-                employeeMenu(client.branchId);
+                employeeMenu(client);
                 break;
             default:
                 System.out.println("Unknown role.");
@@ -219,8 +242,7 @@ public class Client
         exit(0);
     }
 
-
-    static void adminMenu()
+    static void adminMenu(Client client)
     {
         Scanner s = new Scanner(System.in);
         int choice = 0;
@@ -257,7 +279,7 @@ public class Client
                     customerDaoMenu();
                     break;
                 case 6:
-                    chatMenu();
+                    chatMenu(client);
                     break;
                 case 7:
                     System.out.println("\n\nEXITING...");
@@ -269,7 +291,7 @@ public class Client
         }
     }
 
-    static void managerMenu(int branchId)
+    static void managerMenu(Client client)
     {
         Scanner s = new Scanner(System.in);
         int choice = 0;
@@ -291,22 +313,22 @@ public class Client
             switch (choice)
             {
                 case 1:
-                    employeeDaoMenu(Constants.EmployeeRole.EMPLOYEE, branchId);
+                    employeeDaoMenu(Constants.EmployeeRole.EMPLOYEE, client.branchId);
                     break;
                 case 2:
-                    productDaoMenu(branchId);
+                    productDaoMenu(client.branchId);
                     break;
                 case 3:
                     customerDaoMenu();
                     break;
                 case 4:
-                    saleDaoMenu(branchId);
+                    saleDaoMenu(client.branchId);
                     break;
                 case 5:
-                    reportMenu(branchId);
+                    reportMenu(client.branchId);
                     break;
                 case 6:
-                    chatMenu();
+                    chatMenu(client);
                     break;
                 case 7:
                     System.out.println("\n\nEXITING...");
@@ -318,7 +340,7 @@ public class Client
         }
     }
 
-    static void employeeMenu(int branchId)
+    static void employeeMenu(Client client)
     {
         Scanner s = new Scanner(System.in);
         int choice = 0;
@@ -340,10 +362,10 @@ public class Client
                     customerDaoMenu();
                     break;
                 case 2:
-                    saleDaoMenu(branchId);
+                    saleDaoMenu(client.branchId);
                     break;
                 case 3:
-                    chatMenu();
+                    chatMenu(client);
                     break;
                 case 4:
                     System.out.println("\n\nEXITING...");
@@ -355,9 +377,37 @@ public class Client
         }
     }
 
-    static void chatMenu()
+    static void chatMenu(Client client)
     {
+        // send to server "READY"
+        client.sendMessage("READY");
+        DataInputStream console = new DataInputStream(System.in);
+        String line = "";
 
+        System.out.println("Waiting for chat to start...");
+
+        System.out.println("Type 'EXIT' to exit.");
+
+        ListenFromServer listenFromServer = client.new ListenFromServer();
+        listenFromServer.start();
+
+        while (!line.equalsIgnoreCase("EXIT"))
+        {
+            try
+            {
+                line = console.readLine();
+                client.sendMessage(line);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            if (!listenFromServer.isAlive())
+                break;
+        }
+
+        client.sendMessage("NOT_READY");
     }
 
     static void reportMenu(int branchId)

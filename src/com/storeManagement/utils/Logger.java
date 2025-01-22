@@ -4,6 +4,8 @@ import com.storeManagement.model.Log;
 import com.storeManagement.utils.Constants.OperationType;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 public class Logger
 {
@@ -30,6 +32,11 @@ public class Logger
     public void setPath(String path)
     {
         this.path = path;
+        try {
+            Files.createDirectories(Paths.get(path).getParent());
+        } catch (Exception e) {
+            System.out.println("Error creating directories: " + e.getMessage());
+        }
     }
 
     public void log(Log log)
@@ -64,6 +71,5 @@ public class Logger
         Log log = new Log(operation, details);
         log(log);
     }
-
 
 }
