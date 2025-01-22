@@ -377,6 +377,7 @@ public class Client
 
             System.out.print("Enter your choice: ");
             choice = s.nextInt();
+            s.nextLine();
 
             switch(choice) {
                 case 1: {
@@ -415,6 +416,7 @@ public class Client
                     System.out.println("\n\nSALES BY PRODUCT");
                     System.out.println("Enter the product id: ");
                     int productId = s.nextInt();
+                    s.nextLine();
                     List<Sale> sales = null;
                     try {
                         sales = saleDao.getSalesByProduct(productId);
@@ -439,17 +441,60 @@ public class Client
                         System.out.println("Sum: " + sale.getQuantity() * product.getPrice());
                     }
 
+                    System.out.println("************************");
                     System.out.println("Total sales: " + totalSales);
                     System.out.println("Total sum: " + totalSum);
                 }
                     break;
                 case 3: {
                     System.out.println("\n\nSALES BY CATEGORY");
-                    System.out.println("Enter the category: ");
-                    String category = s.nextLine();
+                    boolean validCategory = false;
+                    Constants.Category category = null;
+
+                    while (!validCategory)
+                    {
+                        System.out.println("Choose category: ");
+                        for (int i = 0; i < Constants.Category.values().length; i++)
+                        {
+                            System.out.println((i + 1) + ". " + Constants.Category.values()[i]);
+                        }
+                        System.out.println("Enter category: ");
+                        int catChoice = s.nextInt();
+                        s.nextLine();
+                        switch (catChoice)
+                        {
+                            case 1:
+                                category = Constants.Category.MEN;
+                                validCategory = true;
+                                break;
+                            case 2:
+                                category = Constants.Category.WOMEN;
+                                validCategory = true;
+                                break;
+                            case 3:
+                                category = Constants.Category.FOOTWEAR;
+                                validCategory = true;
+                                break;
+                            case 4:
+                                category = Constants.Category.ACCESSORIES;
+                                validCategory = true;
+                                break;
+                            case 5:
+                                category = Constants.Category.KIDS;
+                                validCategory = true;
+                                break;
+                            case 6:
+                                category = Constants.Category.SEASONAL;
+                                validCategory = true;
+                                break;
+                            default:
+                                System.out.println("Invalid category.");
+                                break;
+                        }
+                    }
                     List<Sale> sales = null;
                     try {
-                        sales = saleDao.getSalesByCategory(category);
+                        sales = saleDao.getSalesByCategory(category.toString());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -471,6 +516,7 @@ public class Client
                         System.out.println("Sum: " + sale.getQuantity() * product.getPrice());
                     }
 
+                    System.out.println("************************");
                     System.out.println("Total sales: " + totalSales);
                     System.out.println("Total sum: " + totalSum);
 

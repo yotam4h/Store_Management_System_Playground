@@ -76,24 +76,33 @@ public class Product
             {
                 System.out.println((i + 1) + ". " + Category.values()[i]);
             }
-            System.out.println("Enter role: ");
-            int role = s.nextInt();
-            switch (role)
+            System.out.println("Enter category: ");
+            int catChoice = s.nextInt();
+            s.nextLine();
+            switch (catChoice)
             {
                 case 1:
-                    this.category = Category.SHIRT;
+                    this.category = Category.MEN;
                     validCategory = true;
                     break;
                 case 2:
-                    this.category = Category.PANTS;
+                    this.category = Category.WOMEN;
                     validCategory = true;
                     break;
                 case 3:
-                    this.category = Category.SHOES;
+                    this.category = Category.FOOTWEAR;
                     validCategory = true;
                     break;
                 case 4:
                     this.category = Category.ACCESSORIES;
+                    validCategory = true;
+                    break;
+                case 5:
+                    this.category = Category.KIDS;
+                    validCategory = true;
+                    break;
+                case 6:
+                    this.category = Category.SEASONAL;
                     validCategory = true;
                     break;
                 default:

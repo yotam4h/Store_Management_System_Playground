@@ -25,9 +25,11 @@ public class Constants
 
     public enum Category
     {
-        SHIRT,
-        PANTS,
-        SHOES,
-        ACCESSORIES
+        MEN,
+        WOMEN,
+        FOOTWEAR,
+        ACCESSORIES,
+        KIDS,
+        SEASONAL,
     }
 }
