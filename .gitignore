@@ -28,8 +28,8 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-*.gitignore
-*.idea
+/.gitignore
+/.idea
 
 # Default ignored files
 /shelf/
