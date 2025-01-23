@@ -455,6 +455,11 @@ public class Server {
                 if (socket != null) socket.close();
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Error closing client resources", e);
+            } finally {
+                logger.info(username + " disconnected.");
+                synchronized (clients) {
+                    clients.remove(this);
+                }
             }
         }
 

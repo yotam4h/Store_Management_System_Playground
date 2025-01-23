@@ -2,6 +2,7 @@ package com.storeManagement.model;
 
 import com.storeManagement.utils.Constants.CustomerType;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Customer
@@ -13,13 +14,6 @@ public class Customer
 
     public Customer()
     {
-    }
-
-    public Customer(String full_name, String phone_number, CustomerType type)
-    {
-        setFullName(full_name);
-        setPhoneNumber(phone_number);
-        setType(type);
     }
 
     public Customer(int id, String full_name, String phone_number, CustomerType type)
@@ -43,8 +37,21 @@ public class Customer
     public void setId()
     {
         Scanner s = new Scanner(System.in);
+        boolean validId = false;
         System.out.println("Enter the customer ID: ");
-        this.id = s.nextInt();
+
+        while(!validId)
+        {
+            try {
+                this.id = s.nextInt();
+                validId = true;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID.");
+            } finally
+            {
+                s.nextLine();
+            }
+        }
     }
 
     public String getFullName()

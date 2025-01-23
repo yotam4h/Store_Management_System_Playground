@@ -43,12 +43,13 @@ public class SaleDao implements Dao<Sale>
             throw new IllegalArgumentException("Sale cannot be null");
         }
 
-        String query = "INSERT INTO Sales (customer_id, product_id, quantity, branch_id) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Sales (customer_id, product_id, quantity, branch_id, total_price) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setInt(1, sale.getCustomerId());
         ps.setInt(2, sale.getProductId());
         ps.setInt(3, sale.getQuantity());
         ps.setInt(4, sale.getBranchId());
+        ps.setDouble(5, sale.getTotalPrice());
 
         int rowsAffected = ps.executeUpdate();
         if (rowsAffected > 0)
@@ -94,7 +95,7 @@ public class SaleDao implements Dao<Sale>
         ResultSet rs = ps.executeQuery();
         if (rs.next())
         {
-            return new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getTimestamp("date"));
+            return new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"),rs.getDouble("total_price"), rs.getTimestamp("date"));
         }
 
         throw new SQLException("Sale not found");
@@ -110,7 +111,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
         }
 
         return sales;
@@ -119,13 +120,14 @@ public class SaleDao implements Dao<Sale>
     @Override
     public void update(Sale sale) throws SQLException
     {
-        String query = "UPDATE Sales SET customer_id = ?, product_id = ?, quantity = ?, branch_id = ? WHERE id = ?";
+        String query = "UPDATE Sales SET customer_id = ?, product_id = ?, quantity = ?, branch_id = ?, total_price = ?,WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setInt(1, sale.getCustomerId());
         ps.setInt(2, sale.getProductId());
         ps.setInt(3, sale.getQuantity());
         ps.setInt(4, sale.getBranchId());
-        ps.setInt(5, sale.getId());
+        ps.setDouble(5, sale.getTotalPrice());
+        ps.setInt(6, sale.getId());
 
         int rowsAffected = ps.executeUpdate();
         if(rowsAffected == 0)
@@ -146,7 +148,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
         }
 
         return sales;
@@ -163,7 +165,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
         }
 
         return sales;
@@ -179,7 +181,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
         }
 
         return sales;

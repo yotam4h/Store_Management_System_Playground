@@ -42,8 +42,21 @@ public class Branch
     public void setId()
     {
         Scanner s = new Scanner(System.in);
+        boolean validId = false;
         System.out.println("Enter the branch ID: ");
-        this.id = s.nextInt();
+
+        while(!validId)
+        {
+            try {
+                this.id = s.nextInt();
+                validId = true;
+            } catch (Exception e) {
+                System.out.println("Invalid ID.");
+            } finally
+            {
+                s.nextLine();
+            }
+        }
     }
 
     public String getName()

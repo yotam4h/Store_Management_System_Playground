@@ -1,8 +1,10 @@
 package com.storeManagement.model;
 
 import com.storeManagement.dataAccessObject.ProductDao;
+import com.storeManagement.utils.Constants;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Sale
@@ -12,12 +14,14 @@ public class Sale
     int product_id;
     int quantity;
     int branch_id;
-    java.sql.Timestamp sale_date;
+    double total_price;
+    java.sql.Timestamp sale_date = null;
 
     public Sale() {}
 
-    public Sale(int customer_id, int product_id, int quantity, int branch_id)
+    public Sale(int customer_id, int product_id, int quantity, int branch_id, double total_price)
     {
+
         setCustomerId(customer_id);
         setProductId(product_id);
         try {
@@ -26,22 +30,10 @@ public class Sale
             e.printStackTrace();
         }
         setBranchId(branch_id);
+        setTotalPrice(total_price);
     }
 
-    public Sale(int id, int customer_id, int product_id, int quantity, int branch_id)
-    {
-        setId(id);
-        setCustomerId(customer_id);
-        setProductId(product_id);
-        try {
-            setQuantity(quantity);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        setBranchId(branch_id);
-    }
-
-    public Sale(int id, int customer_id, int product_id, int quantity, int branch_id, java.sql.Timestamp sale_date)
+    public Sale(int id, int customer_id, int product_id, int quantity, int branch_id,double total_price, java.sql.Timestamp sale_date)
     {
         setId(id);
         setCustomerId(customer_id);
@@ -53,6 +45,7 @@ public class Sale
         }
         setBranchId(branch_id);
         setSaleDate(sale_date);
+        setTotalPrice(total_price);
     }
 
     public void setId(int id)
@@ -63,8 +56,20 @@ public class Sale
     public void setId()
     {
         Scanner s = new Scanner(System.in);
-        System.out.println("Enter the sale id: ");
-        this.id = s.nextInt();
+        boolean validId = false;
+        System.out.println("Enter the sale ID: ");
+
+        while(!validId)
+        {
+            try {
+                this.id = s.nextInt();
+                validId = true;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID.");
+            } finally {
+                s.nextLine();
+            }
+        }
     }
 
     public void setCustomerId(int customer_id)
@@ -127,6 +132,40 @@ public class Sale
         this.branch_id = s.nextInt();
     }
 
+    public void setTotalPrice(double total_price)
+    {
+        this.total_price = total_price;
+    }
+
+    public void setTotalPrice(Constants.CustomerType type)
+    {
+        ProductDao productDao = new ProductDao();
+        try {
+            Product product = productDao.get(product_id);
+            double price = product.getPrice();
+
+            switch(type)
+            {
+                case NEW:
+                    setTotalPrice(price * quantity);
+                    break;
+                case RETURNING:
+                    setTotalPrice(price * quantity * 0.9);
+                    break;
+                case VIP:
+                    setTotalPrice(price * quantity * 0.8);
+                    break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public double getTotalPrice()
+    {
+        return total_price;
+    }
+
     public void setSaleDate(java.sql.Timestamp sale_date)
     {
         this.sale_date = sale_date;
@@ -150,12 +189,16 @@ public class Sale
     @Override
     public String toString()
     {
+        String sale_date = this.sale_date == null ? "" : "sale_date=" + this.sale_date.toString();
+
         return "Sale{" +
                 "id=" + id +
                 "customer_id=" + customer_id +
                 "product_id=" + product_id +
                 "quantity=" + quantity +
                 "branch_id=" + branch_id +
+                "total_price=" + total_price +
+                sale_date +
                 '}';
     }
 

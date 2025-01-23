@@ -56,8 +56,21 @@ public class User
 
     public void setId() {
         Scanner s = new Scanner(System.in);
-        System.out.println("Enter the user id: ");
-        this.id = s.nextInt();
+        boolean validId = false;
+        System.out.println("Enter the user ID: ");
+
+        while(!validId)
+        {
+            try {
+                this.id = s.nextInt();
+                validId = true;
+            } catch (Exception e) {
+                System.out.println("Invalid ID.");
+            } finally
+            {
+                s.nextLine();
+            }
+        }
     }
 
     public void setUsername(String username) {

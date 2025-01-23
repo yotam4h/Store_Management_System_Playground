@@ -44,12 +44,14 @@ public class EmployeeDao implements Dao<Employee>
             throw new IllegalArgumentException("Employee cannot be null");
         }
 
-        String query = "INSERT INTO Employees (full_name, phone_number, role, branch_id) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Employees (id, full_name, phone_number, role, branch_id) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-        ps.setString(1, emp.getFullName());
-        ps.setString(2, emp.getPhoneNumber());
-        ps.setString(3, emp.getRole());
-        ps.setInt(4, emp.getBranchId());
+
+        ps.setInt(1, emp.getId());
+        ps.setString(2, emp.getFullName());
+        ps.setString(3, emp.getPhoneNumber());
+        ps.setString(4, emp.getRole());
+        ps.setInt(5, emp.getBranchId());
 
         int rowsAffected = ps.executeUpdate();
         if (rowsAffected > 0)
@@ -144,5 +146,27 @@ public class EmployeeDao implements Dao<Employee>
         }
 
         logger.log(UPDATE, emp.toString());
+    }
+
+    public List<Employee> getEmployeesByBranch(int branchId) throws SQLException
+    {
+        String query = "SELECT * FROM Employees WHERE branch_id = ?";
+        PreparedStatement ps = con.prepareStatement(query);
+        ps.setInt(1, branchId);
+        ResultSet rs = ps.executeQuery();
+        List<Employee> employees = new ArrayList<>();
+
+        while (rs.next())
+        {
+            employees.add(new Employee(rs.getInt("id"), rs.getString("full_name"), rs.getString("phone_number"), EmployeeRole.valueOf(rs.getString("role")), rs.getInt("branch_id")));
+        }
+
+        if (employees.isEmpty())
+        {
+            // TODO : create custom exception....
+            //throw new Exception("No employees found");
+        }
+
+        return employees;
     }
 }

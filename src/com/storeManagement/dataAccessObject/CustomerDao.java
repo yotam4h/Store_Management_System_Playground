@@ -22,12 +22,13 @@ public class CustomerDao implements Dao<Customer>
     @Override
     public int add(Customer customer) throws SQLException
     {
-        String query = "INSERT INTO Customers (full_name, phone_number, customer_type) VALUES (?, ?, ?)";
+        String query = "INSERT INTO Customers (id, full_name, phone_number, customer_type) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
-        ps.setString(1, customer.getFullName());
-        ps.setString(2, customer.getPhoneNumber());
-        ps.setString(3, customer.getType());
+        ps.setInt(1, customer.getId());
+        ps.setString(2, customer.getFullName());
+        ps.setString(3, customer.getPhoneNumber());
+        ps.setString(4, customer.getType());
 
         int rowsAffected = ps.executeUpdate();
         if (rowsAffected > 0)
