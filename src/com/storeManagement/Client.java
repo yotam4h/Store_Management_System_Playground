@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -264,7 +265,7 @@ public class Client implements AutoCloseable
             System.out.println("7. Exit");
 
             System.out.print("Enter your choice: ");
-            choice = s.nextInt();
+            choice = getChoice();
 
             switch (choice)
             {
@@ -410,6 +411,17 @@ public class Client implements AutoCloseable
 
             if (!listenFromServer.isAlive())
                 break;
+        }
+
+        if (listenFromServer.isAlive())
+            listenFromServer.interrupt();
+
+        try
+        {
+            console.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
         client.sendMessage("NOT_READY");
@@ -1261,5 +1273,27 @@ public class Client implements AutoCloseable
                     break;
             }
         }
+    }
+
+    static int getChoice()
+    {
+        boolean valid = false;
+        int choice = 0;
+        Scanner s = new Scanner(System.in);
+        while (!valid)
+        {
+            try
+            {
+                choice = s.nextInt();
+                valid = true;
+            }
+            catch (InputMismatchException e)
+            {
+                System.out.println("e.getMessage()");
+            } finally {
+                s.nextLine();
+            }
+        }
+        return choice;
     }
 }

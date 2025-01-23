@@ -2,6 +2,7 @@ package com.storeManagement.model;
 
 import com.storeManagement.utils.Constants.EmployeeRole;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Employee {
@@ -66,8 +67,8 @@ public class Employee {
             try {
                 this.id = s.nextInt();
                 validId = true;
-            } catch (Exception e) {
-                System.out.println("Invalid ID.");
+            } catch (InputMismatchException e) {
+                System.out.println(e.getMessage());
             } finally {
                 s.nextLine();
             }
