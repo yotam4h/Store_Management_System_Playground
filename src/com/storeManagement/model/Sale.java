@@ -33,7 +33,7 @@ public class Sale
         setTotalPrice(total_price);
     }
 
-    public Sale(int id, int customer_id, int product_id, int quantity, int branch_id,double total_price, java.sql.Timestamp sale_date)
+    public Sale(int id, int customer_id, int product_id, int quantity, int branch_id,double total_price)
     {
         setId(id);
         setCustomerId(customer_id);
@@ -44,7 +44,6 @@ public class Sale
             e.printStackTrace();
         }
         setBranchId(branch_id);
-        setSaleDate(sale_date);
         setTotalPrice(total_price);
     }
 

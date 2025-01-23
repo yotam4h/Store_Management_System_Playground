@@ -20,6 +20,7 @@ public class ClientThread extends Thread {
     private ObjectOutputStream sOutput;
     private String username;
     private int branchId;
+    private boolean inChat = false;
 
     public ClientThread(Socket socket, Server server, UserDao userDao, ChatManager chatManage) {
         this.socket = socket;
@@ -70,8 +71,10 @@ public class ClientThread extends Thread {
     public void run() {
         try {
             boolean keepGoing = true;
+            String msg = "";
             while (keepGoing) {
-                String msg = (String) sInput.readObject();
+                if(!inChat)
+                    msg = readMessage();
                 switch (msg) {
                     case "DISCONNECT":
                         keepGoing = false;
@@ -79,18 +82,19 @@ public class ClientThread extends Thread {
                     case "READY":
                         chatManage.addEmployeeToQueue(this);
                         break;
-                    case "NOT_READY":
-                        chatManage.removeEmployeeFromQueue(this);
-                        break;
-                    default:
-                        sendMessage("Unknown command");
                 }
+
+
             }
         } catch (IOException | ClassNotFoundException e) {
             logger.log(Level.WARNING, "Client disconnected unexpectedly", e);
         } finally {
             disconnect();
         }
+    }
+
+    public void setInChat(boolean inChat) {
+        this.inChat = inChat;
     }
 
     public void close() {

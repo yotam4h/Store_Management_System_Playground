@@ -95,7 +95,7 @@ public class SaleDao implements Dao<Sale>
         ResultSet rs = ps.executeQuery();
         if (rs.next())
         {
-            return new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"),rs.getDouble("total_price"), rs.getTimestamp("date"));
+            return new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"),rs.getDouble("total_price"));
         }
 
         throw new SQLException("Sale not found");
@@ -111,7 +111,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price")));
         }
 
         return sales;
@@ -148,7 +148,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price")));
         }
 
         return sales;
@@ -165,7 +165,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price")));
         }
 
         return sales;
@@ -181,7 +181,7 @@ public class SaleDao implements Dao<Sale>
         List<Sale> sales = new ArrayList<>();
         while (rs.next())
         {
-            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price"), rs.getTimestamp("date")));
+            sales.add(new Sale(rs.getInt("id"), rs.getInt("customer_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getInt("branch_id"), rs.getDouble("total_price")));
         }
 
         return sales;

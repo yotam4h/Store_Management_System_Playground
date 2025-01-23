@@ -46,6 +46,8 @@ public class ChatManager {
     }
 
     public void startChat(ClientThread employee1, ClientThread employee2) {
+        employee1.setInChat(true);
+        employee2.setInChat(true);
         employee1.sendMessage("You are now talking to " + employee2.getUsername());
         employee2.sendMessage("You are now talking to " + employee1.getUsername());
 
@@ -62,8 +64,8 @@ public class ChatManager {
         } catch (Exception e) {
             System.err.println("Error forwarding messages: " + e.getMessage());
         } finally {
-            removeEmployeeFromQueue(sender);
-            sender.sendMessage("CHAT_ENDED");
+            sender.setInChat(false);
+            receiver.setInChat(false);
         }
     }
 }

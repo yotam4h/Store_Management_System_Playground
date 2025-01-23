@@ -74,10 +74,6 @@ public class Server {
         }
     }
 
-    public Iterator<ClientThread> getClientsIterator() {
-        return clients.iterator();
-    }
-
     public void removeClient(ClientThread client) {
         synchronized (clients) {
             clients.remove(client);
