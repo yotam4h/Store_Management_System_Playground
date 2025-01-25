@@ -1,159 +1,111 @@
-package com.storeManagement;
 
-import com.storeManagement.utils.Constants;
+package com.storeManagement;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-import static java.lang.System.exit;
-
 public class Client implements AutoCloseable {
-    ObjectInputStream sInput;
-    ObjectOutputStream sOutput;
-    Socket socket;
-    String server, username;
-    Constants.EmployeeRole role;
-    int branchId;
-    int port;
+    private ObjectInputStream sInput;
+    private ObjectOutputStream sOutput;
+    private Socket socket;
+    private String server, username, password;
+    private int branchId;
+    private boolean loggedIn = false;
+    private String role;
 
     public Client(String server, int port) {
         this.server = server;
-        this.port = port;
+        connectToServer(port);
     }
 
-    public void display(String msg) {
-        System.out.println(msg);
-    }
-
-    public boolean start() {
+    private void connectToServer(int port) {
         try {
             socket = new Socket(server, port);
-        } catch (Exception ec) {
-            display("Error connecting to server:" + ec);
-            return false;
-        }
-        try {
-            sInput = new ObjectInputStream(socket.getInputStream());
             sOutput = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException eIO) {
-            display("Exception creating new Input/output Streams: " + eIO);
-            return false;
+            sInput = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Connected to server.");
+        } catch (IOException e) {
+            System.err.println("Connection error: " + e.getMessage());
         }
+    }
 
-        try {
-            Scanner s = new Scanner(System.in);
+    public boolean login() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter username: ");
+            username = scanner.nextLine();
 
-            display("\n\nLOGIN");
-
-            display("Enter your username: ");
-            username = s.nextLine();
-            display("Enter your password: ");
-            String password = s.nextLine();
+            System.out.print("Enter password: ");
+            password = scanner.nextLine();
 
             sOutput.writeObject(username);
             sOutput.writeObject(password);
 
             String response = (String) sInput.readObject();
-            switch (response) {
-                case "INVALID":
-                    display("Invalid username or password. Please try again.");
-                    disconnect();
-                    return false;
-                case "ALREADY_LOGGED_IN":
-                    display("User is already logged in. Please try again later.");
-                    disconnect();
-                    return false;
-                case "SUCCESS":
-                    display("Login successful.");
-                    break;
-                default:
-                    display("Unknown response from server: " + response);
-                    disconnect();
-                    return false;
+            if ("SUCCESS".equals(response)) {
+                System.out.println("Login successful.");
+                role = (String) sInput.readObject(); // Receive role from server
+                branchId = Integer.parseInt((String) sInput.readObject()); // Receive branch ID
+                loggedIn = true;
+                Menus.displayMenu(this);
+                return true;
+            } else {
+                System.out.println("Login failed: " + response);
+                return false;
             }
-
-            String role = (String) sInput.readObject();
-            switch (role) {
-                case "ADMIN":
-                    this.role = Constants.EmployeeRole.ADMIN;
-                    break;
-                case "MANAGER":
-                    this.role = Constants.EmployeeRole.MANAGER;
-                    break;
-                case "EMPLOYEE":
-                    this.role = Constants.EmployeeRole.EMPLOYEE;
-                    break;
-            }
-
-            branchId = Integer.parseInt((String) sInput.readObject());
-        } catch (IOException eIO) {
-            display("Exception doing login: " + eIO);
-            disconnect();
-            return false;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error during login: " + e.getMessage());
         }
+        return false;
+    }
 
-        return true;
+    public String getRole() {
+        return role;
+    }
+
+    public int getBranchId() {
+        return branchId;
     }
 
     public void sendMessage(String msg) {
         try {
             sOutput.writeObject(msg);
         } catch (IOException e) {
-            display("Exception writing to server: " + e);
+            System.err.println("Error sending message: " + e.getMessage());
         }
     }
 
     public String readMessage() {
         try {
             return (String) sInput.readObject();
-        } catch (IOException e) {
-            display("Exception reading from server: " + e);
-        } catch (ClassNotFoundException e) {
-            display("Class not found: " + e);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error reading message: " + e.getMessage());
         }
         return null;
     }
 
-    public void disconnect() {
-        sendMessage("DISCONNECT");
-
+    @Override
+    public void close() {
         try {
             if (sInput != null) sInput.close();
-        } catch (Exception e) {
-        }
-        try {
             if (sOutput != null) sOutput.close();
-        } catch (Exception e) {
-        }
-        try {
             if (socket != null) socket.close();
-        } catch (Exception e) {
+            System.out.println("Disconnected from server.");
+        } catch (IOException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
         }
-    }
-
-    @Override
-    public void close() throws Exception {
-        disconnect();
     }
 
     public static void main(String[] args) {
-        int portNumber = 1500;
         String serverAddress = "localhost";
-        Client client = null;
-        boolean loggedIn = false;
+        int portNumber = 1500;
 
-        while (!loggedIn) {
-            client = new Client(serverAddress, portNumber);
-            if (client.start())
-                loggedIn = true;
+        try (Client client = new Client(serverAddress, portNumber)) {
+            if (client.login()) {
+                System.out.println("Welcome to the system!");
+            }
+        } catch (Exception e) {
+            System.err.println("Client error: " + e.getMessage());
         }
-
-        Menus.displayMenu(client);
-
-        client.disconnect();
-        exit(0);
     }
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,23 +16,16 @@ public class Server {
     private boolean keepGoing;
     private ServerSocket serverSocket;
     private final List<ClientThread> clients;
-    private final UserDao userDao;
-    private final ChatManager chatManage;
+    private final ChatManager chatManager;
 
     public Server(int port) {
         this.port = port;
         this.clients = new ArrayList<>();
-        this.userDao = new UserDao();
-        this.chatManage = new ChatManager();
+        this.chatManager = new ChatManager();
     }
 
-    public boolean authenticateUser(String username, String password) {
-        try {
-            return userDao.authenticateUser(username, password);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Authentication error", e);
-            return false;
-        }
+    public ChatManager getChatManager() {
+        return chatManager;
     }
 
     public void start() {
@@ -47,7 +39,7 @@ public class Server {
                 Socket socket = serverSocket.accept();
                 if (!keepGoing) break;
 
-                ClientThread clientThread = new ClientThread(socket, this, userDao, chatManage);
+                ClientThread clientThread = new ClientThread(socket, getChatManager());
                 synchronized (clients) {
                     clients.add(clientThread);
                 }
@@ -78,17 +70,6 @@ public class Server {
         synchronized (clients) {
             clients.remove(client);
         }
-    }
-
-    public boolean isUsernameLoggedIn(String username) {
-        synchronized (clients) {
-            for (ClientThread client : clients) {
-                if (client.getUsername().equals(username)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public static void main(String[] args) {

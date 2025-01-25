@@ -1,137 +1,172 @@
 package com.storeManagement;
 
 import com.storeManagement.dataAccessObject.UserDao;
-import com.storeManagement.utils.Constants.EmployeeRole;
 
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ClientThread extends Thread {
-    private static final Logger logger = Logger.getLogger(ClientThread.class.getName());
-    private final Socket socket;
-    private final Server server;
-    private final UserDao userDao;
-    private final ChatManager chatManage;
-    private ObjectInputStream sInput;
-    private ObjectOutputStream sOutput;
+    private Socket socket;
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
     private String username;
     private int branchId;
-    private boolean inChat = false;
+    private ChatManager chatManager;  // Reference to ChatManager for handling chats
+    private UserDao userDao;  // Reference to UserDao for user authentication
 
-    public ClientThread(Socket socket, Server server, UserDao userDao, ChatManager chatManage) {
+    public ClientThread(Socket socket, ChatManager chatManager) {
         this.socket = socket;
-        this.server = server;
-        this.userDao = userDao;
-        this.chatManage = chatManage;
-        initialize();
-    }
-
-    private void initialize() {
-        try {
-            sOutput = new ObjectOutputStream(socket.getOutputStream());
-            sInput = new ObjectInputStream(socket.getInputStream());
-
-            this.username = (String) sInput.readObject();
-            String password = (String) sInput.readObject();
-
-            if(server.isUsernameLoggedIn(username)){
-                sendMessage("ALREADY_LOGGED_IN");
-                close();
-                return;
-            }
-
-            if (!server.authenticateUser(username, password)) {
-                sendMessage("INVALID");
-                close();
-                return;
-            }
-
-            this.branchId = userDao.getByUsername(username).getBranchId();
-            sendMessage("SUCCESS");
-
-            logger.info(username + " connected.");
-
-            EmployeeRole role = EmployeeRole.valueOf(userDao.getByUsername(username).getRole());
-            sendMessage(role.toString());
-
-            branchId = userDao.getByUsername(username).getBranchId();
-            sendMessage(String.valueOf(branchId));
-
-        } catch (IOException | ClassNotFoundException | SQLException e) {
-            logger.log(Level.SEVERE, "Client connection error", e);
-            close();
-        }
+        this.chatManager = chatManager;
+        this.userDao = new UserDao();
     }
 
     @Override
     public void run() {
         try {
-            boolean keepGoing = true;
-            String msg = "";
-            while (keepGoing) {
-                if(!inChat)
-                    msg = readMessage();
-                switch (msg) {
-                    case "DISCONNECT":
-                        keepGoing = false;
-                        break;
-                    case "READY":
-                        chatManage.addEmployeeToQueue(this);
-                        break;
-                }
-
-
-            }
+            setupStreams();
+            authenticateUser();
+            handleClientMessages();
         } catch (IOException | ClassNotFoundException e) {
-            logger.log(Level.WARNING, "Client disconnected unexpectedly", e);
+            e.printStackTrace();
         } finally {
-            disconnect();
+            close();
         }
     }
 
-    public void setInChat(boolean inChat) {
-        this.inChat = inChat;
+    private void setupStreams() throws IOException {
+        inputStream = new ObjectInputStream(socket.getInputStream());
+        outputStream = new ObjectOutputStream(socket.getOutputStream());
     }
 
-    public void close() {
+    private void authenticateUser() throws IOException, ClassNotFoundException {
+        username = (String) inputStream.readObject();
+        String password = (String) inputStream.readObject();
+
+        // if username is already logged in
+        if (chatManager.isUsernameLoggedIn(username)) {
+            outputStream.writeObject("ALREADY_LOGGED_IN");
+            socket.close();
+            throw new IOException("User already logged in.");
+        }
+
+        if (isValidCredentials(username, password)) {
+            outputStream.writeObject("SUCCESS");
+            branchId = getBranchIdForUser(username);
+            String role = getRoleForUser(username);
+            outputStream.writeObject(role);
+            outputStream.writeObject(String.valueOf(branchId));
+            chatManager.addUserToLogin(username);  // Notify ChatManager that the user is logged in
+        } else {
+            outputStream.writeObject("INVALID");
+            socket.close();
+        }
+    }
+
+    private boolean isValidCredentials(String username, String password) {
         try {
-            if (sOutput != null) sOutput.close();
-            if (sInput != null) sInput.close();
+            return userDao.authenticateUser(username, password);
+        } catch (SQLException e) {
+            System.out.println("Error during authentication: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private int getBranchIdForUser(String username) {
+        try {
+            return userDao.getByUsername(username).getBranchId();
+        } catch (SQLException e) {
+            System.out.println("Error getting branch ID: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    private String getRoleForUser(String username) {
+        try {
+            return userDao.getByUsername(username).getRole();
+        } catch (SQLException e) {
+            System.out.println("Error getting role: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void handleClientMessages() throws IOException, ClassNotFoundException {
+        while (true) {
+            String message = (String) inputStream.readObject();
+
+            if (message.equalsIgnoreCase("EXIT")) {
+                break;
+            } else if (message.startsWith("ENDCHAT")) {
+                handleEndChat();
+            } else {
+                handleChatMessages(message);
+            }
+        }
+    }
+
+    private void handleChatMessages(String message) {
+        if (message.startsWith("CHAT")) {
+            String targetUsername = message.split(" ")[1];
+            ClientThread targetClient = chatManager.getClientByUsername(targetUsername);
+
+            if (targetClient != null) {
+                chatManager.startChat(this, targetClient);
+            } else {
+                try {
+                    outputStream.writeObject("Target user not available.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            chatManager.handleMessage(this, message);  // Use handleMessage to send the message to the target user
+        }
+    }
+
+    private void handleEndChat() {
+        // Ending the chat with the other client
+        // In this example, it assumes that you want to end the chat with the user who started the chat
+        // If you want a more specific logic, you'll need to track the target client during the chat session
+        ClientThread targetClient = chatManager.getClientByUsername(username);
+        if (targetClient != null) {
+            chatManager.endChat(this, targetClient);
+        } else {
+            try {
+                outputStream.writeObject("No active chat to end.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void close() {
+        try {
             if (socket != null) socket.close();
+            if (inputStream != null) inputStream.close();
+            if (outputStream != null) outputStream.close();
+            chatManager.removeUserFromLogin(username);  // Remove the user from logged-in list when they disconnect
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error closing client resources", e);
-        } finally {
-            server.removeClient(this);
+            e.printStackTrace();
         }
-    }
-
-    public void disconnect() {
-        close();
-        logger.info(username + " disconnected.");
-    }
-
-    public void sendMessage(String msg) {
-        try {
-            sOutput.writeObject(msg);
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Error sending message to client", e);
-        }
-    }
-
-    public String readMessage() throws IOException, ClassNotFoundException {
-        return (String) sInput.readObject();
-    }
-
-    public int getBranchId() {
-        return branchId;
     }
 
     public String getUsername() {
         return username;
     }
 
+    public int getBranchId() {
+        return branchId;
+    }
+
+    public void sendMessage(String message) {
+        try {
+            outputStream.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
 }

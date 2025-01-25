@@ -11,8 +11,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Menus {
-    public static void displayMenu(Client client) {
-        switch (client.role.toString()) {
+    public  void displayMenu(Client client) {
+        switch (client.getRole()) {
             case "ADMIN":
                 adminMenu(client);
                 break;
@@ -28,9 +28,8 @@ public class Menus {
         }
     }
 
-    static void adminMenu(Client client)
+    void adminMenu(Client client)
     {
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while(choice != 7)
@@ -77,9 +76,8 @@ public class Menus {
         }
     }
 
-    static void managerMenu(Client client)
+    void managerMenu(Client client)
     {
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while(choice != 7)
@@ -99,19 +97,19 @@ public class Menus {
             switch (choice)
             {
                 case 1:
-                    employeeDaoMenu(Constants.EmployeeRole.EMPLOYEE, client.branchId);
+                    employeeDaoMenu(Constants.EmployeeRole.EMPLOYEE, client.getBranchId());
                     break;
                 case 2:
-                    productDaoMenu(client.branchId);
+                    productDaoMenu(client.getBranchId());
                     break;
                 case 3:
                     customerDaoMenu();
                     break;
                 case 4:
-                    saleDaoMenu(client.branchId);
+                    saleDaoMenu(client.getBranchId());
                     break;
                 case 5:
-                    reportMenu(client.branchId);
+                    reportMenu(client.getBranchId());
                     break;
                 case 6:
                     chatMenu(client);
@@ -126,9 +124,8 @@ public class Menus {
         }
     }
 
-    static void employeeMenu(Client client)
+    void employeeMenu(Client client)
     {
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while(choice != 4)
@@ -148,7 +145,7 @@ public class Menus {
                     customerDaoMenu();
                     break;
                 case 2:
-                    saleDaoMenu(client.branchId);
+                    saleDaoMenu(client.getBranchId());
                     break;
                 case 3:
                     chatMenu(client);
@@ -163,7 +160,7 @@ public class Menus {
         }
     }
 
-    static void chatMenu(Client client)
+    void chatMenu(Client client)
     {
         // send to server "READY"
         client.sendMessage("READY");
@@ -171,8 +168,8 @@ public class Menus {
         String line = "";
 
         System.out.println("Waiting for chat to start...");
-
-        System.out.println("Type 'EXIT' to exit.");
+        System.out.println("Type 'CHAT <username>' to start a chat with a user.");
+        System.out.println("Type 'EXIT' to exit chat.");
 
         ListenFromServer listenFromServer = new ListenFromServer(client);
         listenFromServer.start();
@@ -197,9 +194,15 @@ public class Menus {
         if (listenFromServer.isAlive())
             listenFromServer.interrupt();
 
+        try {
+            listenFromServer.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    static void reportMenu(int branchId)
+    void reportMenu(int branchId)
     {
         SaleDao saleDao = new SaleDao();
         ProductDao productDao = new ProductDao();
@@ -220,7 +223,7 @@ public class Menus {
             switch(choice) {
                 case 1: {
                     System.out.println("\n\nSALES BY BRANCH");
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try {
                         if (branchId == 0)
                         {
@@ -231,12 +234,13 @@ public class Menus {
                         else
                             sales = saleDao.getSalesByBranch(branchId);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        break;
                     }
                     double totalSales = 0;
                     double totalSum = 0;
                     for (Sale sale : sales) {
-                        Product product = null;
+                        Product product;
                         try {
                             product = productDao.get(sale.getProductId());
                         } catch (SQLException e) {
@@ -264,21 +268,24 @@ public class Menus {
                     System.out.println("Enter the product id: ");
                     int productId = s.nextInt();
                     s.nextLine();
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try {
                         sales = saleDao.getSalesByProduct(productId);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        break;
                     }
                     double totalSales = 0;
                     double totalSum = 0;
                     for (Sale sale : sales) {
-                        Product product = null;
+                        Product product;
                         try {
                             product = productDao.get(sale.getProductId());
                         } catch (SQLException e) {
-                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            break;
                         }
+
                         totalSales += sale.getQuantity();
                         totalSum += sale.getTotalPrice();
 
@@ -298,7 +305,7 @@ public class Menus {
                     Product product = new Product();
                     product.setCategory();
 
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try {
                         sales = saleDao.getSalesByCategory(product.getCategory());
                     } catch (SQLException e) {
@@ -308,11 +315,11 @@ public class Menus {
                     double totalSales = 0;
                     double totalSum = 0;
                     for (Sale sale : sales) {
-                        product = null;
                         try {
                             product = productDao.get(sale.getProductId());
                         } catch (SQLException e) {
-                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            break;
                         }
                         totalSales += sale.getQuantity();
                         totalSum += sale.getTotalPrice();
@@ -339,12 +346,11 @@ public class Menus {
         }
     }
 
-    static void saleDaoMenu(int branchId)
+    void saleDaoMenu(int branchId)
     {
         SaleDao saleDao = new SaleDao();
         ProductDao productDao = new ProductDao();
         CustomerDao customerDao = new CustomerDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while (choice != 6)
@@ -493,10 +499,9 @@ public class Menus {
         }
     }
 
-    static void employeeDaoMenu(Constants.EmployeeRole role, int branchId)
+    void employeeDaoMenu(Constants.EmployeeRole role, int branchId)
     {
         EmployeeDao employeeDao = new EmployeeDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while(choice != 5) {
@@ -609,10 +614,9 @@ public class Menus {
         }
     }
 
-    static void productDaoMenu(int branchId)
+    void productDaoMenu(int branchId)
     {
         ProductDao productDao = new ProductDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while(choice != 5) {
@@ -733,10 +737,9 @@ public class Menus {
         }
     }
 
-    static void customerDaoMenu()
+    void customerDaoMenu()
     {
         CustomerDao customerDao = new CustomerDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while (choice != 5) {
@@ -836,10 +839,9 @@ public class Menus {
         }
     }
 
-    static void branchDaoMenu()
+    void branchDaoMenu()
     {
         BranchDao branchDao = new BranchDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while (choice != 5)
@@ -934,7 +936,7 @@ public class Menus {
         }
     }
 
-    static void userDaoMenu()
+    void userDaoMenu()
     {
         UserDao userDao = new UserDao();
         Scanner s = new Scanner(System.in);
@@ -1046,7 +1048,7 @@ public class Menus {
         }
     }
 
-    static int getChoice() {
+    int getChoice() {
         boolean valid = false;
         int choice = 0;
         Scanner s = new Scanner(System.in);

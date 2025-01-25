@@ -1,71 +1,72 @@
 package com.storeManagement;
 
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChatManager {
-    private final Map<Integer, Queue<ClientThread>> employees = new ConcurrentHashMap<>();
+    private Set<String> loggedInUsers = new HashSet<>();  // Track logged-in usernames
+    private Set<ChatSession> activeChats = new HashSet<>();  // Active chat sessions
 
-    public synchronized void addEmployeeToQueue(ClientThread employee) {
-        employees.putIfAbsent(employee.getBranchId(), new ConcurrentLinkedQueue<>());
-        employees.get(employee.getBranchId()).add(employee);
+    // Method to check if a username is already logged in
+    public boolean isUsernameLoggedIn(String username) {
+        return loggedInUsers.contains(username);
+    }
 
-        Integer otherBranchId = employees.keySet().stream()
-                .filter(id -> !id.equals(employee.getBranchId()) && employees.get(id) != null && !employees.get(id).isEmpty())
-                .findFirst()
-                .orElse(null);
+    // Method to add a user to the logged-in users list
+    public void addUserToLogin(String username) {
+        loggedInUsers.add(username);
+    }
 
-        if (otherBranchId != null) {
-            JoinChat(employee.getBranchId(), otherBranchId);
+    // Method to remove a user from the logged-in users list
+    public void removeUserFromLogin(String username) {
+        loggedInUsers.remove(username);
+    }
+
+    // Check if a chat is active between two clients
+    public boolean isChatActive(ClientThread client1, ClientThread client2) {
+        ChatSession session = new ChatSession(client1, client2);
+        return activeChats.contains(session);
+    }
+
+    // Start a new chat session between two clients
+    public void startChat(ClientThread client1, ClientThread client2) {
+        if (!isChatActive(client1, client2)) {
+            activeChats.add(new ChatSession(client1, client2));
+            // Notify both clients that the chat has started
+            client1.sendMessage("Chat started with " + client2.getUsername());
+            client2.sendMessage("Chat started with " + client1.getUsername());
+        } else {
+            client1.sendMessage("Chat is already active between you and " + client2.getUsername());
         }
     }
 
-    public synchronized void removeEmployeeFromQueue(ClientThread employee) {
-        Queue<ClientThread> queue = employees.get(employee.getBranchId());
-        if (queue != null) {
-            queue.remove(employee);
-        }
+    // End the chat session between two clients
+    public void endChat(ClientThread client1, ClientThread client2) {
+        activeChats.remove(new ChatSession(client1, client2));  // Remove the chat session
+        // Notify both clients that the chat has ended
+        client1.sendMessage("Chat ended with " + client2.getUsername());
+        client2.sendMessage("Chat ended with " + client1.getUsername());
     }
 
-    public synchronized void JoinChat(Integer branchId, Integer otherBranchId) {
-        Queue<ClientThread> queue1 = employees.get(branchId);
-        Queue<ClientThread> queue2 = employees.get(otherBranchId);
-
-        if (queue1 == null || queue2 == null) return;
-
-        while (!queue1.isEmpty() && !queue2.isEmpty()) {
-            ClientThread employee1 = queue1.poll();
-            ClientThread employee2 = queue2.poll();
-
-            if (employee1 != null && employee2 != null) {
-                startChat(employee1, employee2);
-            }
-        }
+    // Method to retrieve a client by their username
+    public ClientThread getClientByUsername(String username) {
+        // This assumes you have some way of mapping usernames to ClientThreads
+        // For example, a Map<String, ClientThread> could be used
+        // Placeholder logic:
+        return null;  // Replace with actual logic for retrieving the client
     }
 
-    public void startChat(ClientThread employee1, ClientThread employee2) {
-        employee1.setInChat(true);
-        employee2.setInChat(true);
-        employee1.sendMessage("You are now talking to " + employee2.getUsername());
-        employee2.sendMessage("You are now talking to " + employee1.getUsername());
+    // Method to handle a new message from a client
+    public void handleMessage(ClientThread sender, String message) {
+        // Find the recipient client
+        String targetUsername = message.split(" ")[0];  // Assuming format: "username message"
+        ClientThread targetClient = getClientByUsername(targetUsername);
 
-        new Thread(() -> forwardMessages(employee1, employee2)).start();
-        new Thread(() -> forwardMessages(employee2, employee1)).start();
-    }
-
-    private void forwardMessages(ClientThread sender, ClientThread receiver) {
-        try {
-            String message;
-            while ((message = sender.readMessage()) != null) {
-                receiver.sendMessage(message);
-            }
-        } catch (Exception e) {
-            System.err.println("Error forwarding messages: " + e.getMessage());
-        } finally {
-            sender.setInChat(false);
-            receiver.setInChat(false);
+        if (targetClient != null) {
+            // If the target client exists, send the message
+            targetClient.sendMessage("Message from " + sender.getUsername() + ": " + message);
+        } else {
+            sender.sendMessage("Target user not available.");
         }
     }
 }
