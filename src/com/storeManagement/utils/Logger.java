@@ -14,8 +14,10 @@ public class Logger
     public Logger() {
         if(System.getProperty("os.name").startsWith("Windows")) {
             setPath("C:\\tmp\\log.txt");
-        } else {
+        } else if (System.getProperty("os.name").startsWith("Linux")) {
             setPath("/logs/log.txt");
+        } else {
+            setPath("./log.txt");
         }
     }
 
@@ -32,11 +34,6 @@ public class Logger
     public void setPath(String path)
     {
         this.path = path;
-        try {
-            Files.createDirectories(Paths.get(path).getParent());
-        } catch (Exception e) {
-            System.out.println("Error creating directories: " + e.getMessage());
-        }
     }
 
     public void log(Log log)
