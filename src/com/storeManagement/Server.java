@@ -5,6 +5,7 @@ import com.storeManagement.dataAccessObject.UserDao;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,16 +17,39 @@ public class Server {
     private boolean keepGoing;
     private ServerSocket serverSocket;
     private final List<ClientThread> clients;
-    private final ChatManager chatManager;
+    private final UserDao userDao;
 
     public Server(int port) {
         this.port = port;
         this.clients = new ArrayList<>();
-        this.chatManager = new ChatManager();
+        this.userDao = new UserDao();
     }
 
-    public ChatManager getChatManager() {
-        return chatManager;
+    public boolean authenticateUser(String username, String password) {
+        try {
+            return userDao.authenticateUser(username, password);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Authentication error", e);
+            return false;
+        }
+    }
+
+    public int getBranchIdForUser(String username) {
+        try {
+            return userDao.getByUsername(username).getBranchId();
+        } catch (SQLException e) {
+            System.out.println("Error getting branch ID: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public String getRoleForUser(String username) {
+        try {
+            return userDao.getByUsername(username).getRole();
+        } catch (SQLException e) {
+            System.out.println("Error getting role: " + e.getMessage());
+            return null;
+        }
     }
 
     public void start() {
@@ -39,7 +63,7 @@ public class Server {
                 Socket socket = serverSocket.accept();
                 if (!keepGoing) break;
 
-                ClientThread clientThread = new ClientThread(socket, getChatManager());
+                ClientThread clientThread = new ClientThread(socket, this);
                 synchronized (clients) {
                     clients.add(clientThread);
                 }
@@ -72,8 +96,29 @@ public class Server {
         }
     }
 
+    public boolean isUsernameLoggedIn(String username) {
+        synchronized (clients) {
+            for (ClientThread client : clients) {
+                if (client.getUsername().equals(username) && client.isLoggedIn()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         Server server = new Server(1500);
         server.start();
+    }
+
+    public void broadcast(String message, ClientThread excludeClient) {
+        synchronized (clients) {
+            for (ClientThread client : clients) {
+                if (client != excludeClient) {
+                    client.sendMessage(excludeClient.getUsername() + ": " + message);
+                }
+            }
+        }
     }
 }

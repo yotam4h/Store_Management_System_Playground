@@ -47,6 +47,7 @@ public class Client implements AutoCloseable {
                 role = (String) sInput.readObject(); // Receive role from server
                 branchId = Integer.parseInt((String) sInput.readObject()); // Receive branch ID
                 loggedIn = true;
+                Menus.displayMenu(this);
                 return true;
             } else {
                 System.out.println("Login failed: " + response);
@@ -82,6 +83,7 @@ public class Client implements AutoCloseable {
     @Override
     public void close() {
         try {
+            sendMessage("DISCONNECT");
             if (sInput != null) sInput.close();
             if (sOutput != null) sOutput.close();
             if (socket != null) socket.close();
@@ -96,9 +98,7 @@ public class Client implements AutoCloseable {
         int portNumber = 1500;
 
         try (Client client = new Client(serverAddress, portNumber)) {
-            if (client.login()) {
-                Menus.displayMenu(client);
-            }
+            client.login();
         } catch (Exception e) {
             System.err.println("Client error: " + e.getMessage());
         }

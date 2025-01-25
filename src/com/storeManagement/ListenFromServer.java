@@ -17,17 +17,6 @@ class ListenFromServer extends Thread {
                 keepGoing = false;
             }
 
-//            String message = client.readMessage();
-//            if ("CHAT_ENDED".equalsIgnoreCase(message)) {
-//                keepGoing = false;
-//                System.out.println("Chat ended by the server.");
-//            } else if (message == null)
-//            {
-//                keepGoing = false;
-//            } else
-//            {
-//                System.out.println(message);
-//            }
             String message = "";
             try {
                 message = client.readMessage();

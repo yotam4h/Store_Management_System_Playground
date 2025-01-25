@@ -170,7 +170,6 @@ public class Menus {
         String line = "";
 
         System.out.println("Waiting for chat to start...");
-        System.out.println("Type 'CHAT <username>' to start a chat with a user.");
         System.out.println("Type 'EXIT' to exit chat.");
 
         ListenFromServer listenFromServer = new ListenFromServer(client);
