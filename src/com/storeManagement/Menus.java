@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Menus {
-    public  void displayMenu(Client client) {
+    public static void displayMenu(Client client) {
         switch (client.getRole()) {
             case "ADMIN":
                 adminMenu(client);
@@ -28,7 +28,7 @@ public class Menus {
         }
     }
 
-    void adminMenu(Client client)
+    static void adminMenu(Client client)
     {
         int choice = 0;
 
@@ -76,7 +76,7 @@ public class Menus {
         }
     }
 
-    void managerMenu(Client client)
+    static void managerMenu(Client client)
     {
         int choice = 0;
 
@@ -124,7 +124,7 @@ public class Menus {
         }
     }
 
-    void employeeMenu(Client client)
+    static void employeeMenu(Client client)
     {
         int choice = 0;
 
@@ -160,7 +160,7 @@ public class Menus {
         }
     }
 
-    void chatMenu(Client client)
+    static void chatMenu(Client client)
     {
         // send to server "READY"
         client.sendMessage("READY");
@@ -197,12 +197,11 @@ public class Menus {
         try {
             listenFromServer.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Error joining thread." + e.getMessage());
         }
-
     }
 
-    void reportMenu(int branchId)
+    static void reportMenu(int branchId)
     {
         SaleDao saleDao = new SaleDao();
         ProductDao productDao = new ProductDao();
@@ -346,7 +345,7 @@ public class Menus {
         }
     }
 
-    void saleDaoMenu(int branchId)
+    static void saleDaoMenu(int branchId)
     {
         SaleDao saleDao = new SaleDao();
         ProductDao productDao = new ProductDao();
@@ -499,7 +498,7 @@ public class Menus {
         }
     }
 
-    void employeeDaoMenu(Constants.EmployeeRole role, int branchId)
+    static void employeeDaoMenu(Constants.EmployeeRole role, int branchId)
     {
         EmployeeDao employeeDao = new EmployeeDao();
         int choice = 0;
@@ -614,7 +613,7 @@ public class Menus {
         }
     }
 
-    void productDaoMenu(int branchId)
+    static void productDaoMenu(int branchId)
     {
         ProductDao productDao = new ProductDao();
         int choice = 0;
@@ -737,7 +736,7 @@ public class Menus {
         }
     }
 
-    void customerDaoMenu()
+    static void customerDaoMenu()
     {
         CustomerDao customerDao = new CustomerDao();
         int choice = 0;
@@ -839,7 +838,7 @@ public class Menus {
         }
     }
 
-    void branchDaoMenu()
+    static void branchDaoMenu()
     {
         BranchDao branchDao = new BranchDao();
         int choice = 0;
@@ -936,7 +935,7 @@ public class Menus {
         }
     }
 
-    void userDaoMenu()
+    static void userDaoMenu()
     {
         UserDao userDao = new UserDao();
         Scanner s = new Scanner(System.in);
@@ -1048,7 +1047,7 @@ public class Menus {
         }
     }
 
-    int getChoice() {
+    static int getChoice() {
         boolean valid = false;
         int choice = 0;
         Scanner s = new Scanner(System.in);
