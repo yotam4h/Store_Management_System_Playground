@@ -47,7 +47,6 @@ public class Client implements AutoCloseable {
                 role = (String) sInput.readObject(); // Receive role from server
                 branchId = Integer.parseInt((String) sInput.readObject()); // Receive branch ID
                 loggedIn = true;
-                Menus.displayMenu(this);
                 return true;
             } else {
                 System.out.println("Login failed: " + response);
@@ -75,13 +74,9 @@ public class Client implements AutoCloseable {
         }
     }
 
-    public String readMessage() {
-        try {
-            return (String) sInput.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error reading message: " + e.getMessage());
-        }
-        return null;
+    public String readMessage() throws IOException, ClassNotFoundException
+    {
+        return (String) sInput.readObject();
     }
 
     @Override
@@ -102,7 +97,7 @@ public class Client implements AutoCloseable {
 
         try (Client client = new Client(serverAddress, portNumber)) {
             if (client.login()) {
-                System.out.println("Welcome to the system!");
+                Menus.displayMenu(client);
             }
         } catch (Exception e) {
             System.err.println("Client error: " + e.getMessage());

@@ -4,6 +4,8 @@ import com.storeManagement.dataAccessObject.*;
 import com.storeManagement.model.*;
 import com.storeManagement.utils.Constants;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -205,16 +207,18 @@ public class Menus {
     {
         SaleDao saleDao = new SaleDao();
         ProductDao productDao = new ProductDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
-        while(choice != 4)
+        while(choice != 7)
         {
             System.out.println("\n\nREPORT MENU");
             System.out.println("1. Sales by branch");
             System.out.println("2. Sales by product");
             System.out.println("3. Sales by category");
-            System.out.println("4. Exit");
+            System.out.println("4. Export Branch Report");
+            System.out.println("5. Export Product Report");
+            System.out.println("6. Export Category Report");
+            System.out.println("7. Exit");
 
             System.out.print("Enter your choice: ");
             choice = getChoice();
@@ -264,12 +268,11 @@ public class Menus {
                 break;
                 case 2: {
                     System.out.println("\n\nSALES BY PRODUCT");
-                    System.out.println("Enter the product id: ");
-                    int productId = s.nextInt();
-                    s.nextLine();
+                    Product product = new Product();
+                    product.setId();
                     List<Sale> sales;
                     try {
-                        sales = saleDao.getSalesByProduct(productId);
+                        sales = saleDao.getSalesByProduct(product.getId());
                     } catch (SQLException e) {
                         System.out.println(e.getMessage());
                         break;
@@ -277,7 +280,6 @@ public class Menus {
                     double totalSales = 0;
                     double totalSum = 0;
                     for (Sale sale : sales) {
-                        Product product;
                         try {
                             product = productDao.get(sale.getProductId());
                         } catch (SQLException e) {
@@ -335,7 +337,129 @@ public class Menus {
 
                     break;
                 }
-                case 4:
+                case 4: { // write to a text file a report by branch id
+                    List<Sale> sales = null;
+                    try {
+                        if (branchId == 0) {
+                            Branch branch = new Branch();
+                            branch.setId();
+                            sales = saleDao.getSalesByBranch(branch.getId());
+                        } else {
+                            sales = saleDao.getSalesByBranch(branchId);
+                        }
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        break;
+                    }
+                    double totalSales = 0;
+                    double totalSum = 0;
+                    try (FileWriter writer = new FileWriter("./branch_sales_report.txt")) {
+                        writer.write("SALES BY BRANCH:\n");
+                        for (Sale sale : sales) {
+                            Product product = null;
+                            try {
+                                product = productDao.get(sale.getProductId());
+                            } catch (SQLException e) {
+                                System.out.println(e.getMessage());
+                                System.out.println("Error getting product.");
+                                break;
+                            }
+                            totalSales += sale.getQuantity();
+                            totalSum += sale.getTotalPrice();
+                            writer.write("************************\n");
+                            writer.write("Product: " + product.getName() + "\n");
+                            writer.write("Quantity: " + sale.getQuantity() + "\n");
+                            writer.write("Sum: " + sale.getTotalPrice() + "\n");
+                        }
+                        writer.write("************************\n");
+                        writer.write("Total sales: " + totalSales + "\n");
+                        writer.write("Total sum: " + totalSum + "\n");
+                        System.out.println("Text report created successfully.");
+                    } catch (IOException e) {
+                        System.out.println("Error writing text report: " + e.getMessage());
+                    }
+                    break;
+                }
+                case 5: { // write to a text file a report by product id
+                    System.out.println("\n\nSALES BY PRODUCT");
+                    Product product = new Product();
+                    product.setId();
+
+                    List<Sale> sales = null;
+                    try {
+                        sales = saleDao.getSalesByProduct(product.getId());
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        break;
+                    }
+                    double totalSales = 0;
+                    double totalSum = 0;
+                    try (FileWriter writer = new FileWriter("./product_" + product.getId() + "_sales_report.txt")) {
+                        writer.write("SALES BY PRODUCT " + product.getId() + ":\n");
+                        for (Sale sale : sales) {
+                            try {
+                                product = productDao.get(sale.getProductId());
+                            } catch (SQLException e) {
+                                System.out.println(e.getMessage());
+                                System.out.println("Error getting product.");
+                                break;
+                            }
+                            totalSales += sale.getQuantity();
+                            totalSum += sale.getTotalPrice();
+                            writer.write("************************\n");
+                            writer.write("Product: " + product.getName() + "\n");
+                            writer.write("Quantity: " + sale.getQuantity() + "\n");
+                            writer.write("Sum: " + sale.getTotalPrice() + "\n");
+                        }
+                        writer.write("************************\n");
+                        writer.write("Total sales: " + totalSales + "\n");
+                        writer.write("Total sum: " + totalSum + "\n");
+                        System.out.println("Text report created successfully.");
+                    } catch (IOException e) {
+                        System.out.println("Error writing text report: " + e.getMessage());
+                    }
+                    break;
+                }
+                case 6: { // write to a text file a report by category
+                    System.out.println("\n\nSALES BY CATEGORY");
+                    Product product = new Product();
+                    product.setCategory();
+                    List<Sale> sales = null;
+                    try {
+                        sales = saleDao.getSalesByCategory(product.getCategory());
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        break;
+                    }
+                    double totalSales = 0;
+                    double totalSum = 0;
+                    try (FileWriter writer = new FileWriter("./category_" + product.getCategory() + "_sales_report.txt")) {
+                        writer.write("SALES BY " + product.getCategory() + " CATEGORY:\n");
+                        for (Sale sale : sales) {
+                            try {
+                                product = productDao.get(sale.getProductId());
+                            } catch (SQLException e) {
+                                System.out.println(e.getMessage());
+                                System.out.println("Error getting product.");
+                                break;
+                            }
+                            totalSales += sale.getQuantity();
+                            totalSum += sale.getTotalPrice();
+                            writer.write("************************\n");
+                            writer.write("Product: " + product.getName() + "\n");
+                            writer.write("Quantity: " + sale.getQuantity() + "\n");
+                            writer.write("Sum: " + sale.getTotalPrice() + "\n");
+                        }
+                        writer.write("************************\n");
+                        writer.write("Total sales: " + totalSales + "\n");
+                        writer.write("Total sum: " + totalSum + "\n");
+                        System.out.println("Text report created successfully.");
+                    } catch (IOException e) {
+                        System.out.println("Error writing text report: " + e.getMessage());
+                    }
+                    break;
+                }
+                case 7:
                     System.out.println("\n\nEXITING...");
                     break;
                 default:

@@ -13,17 +13,38 @@ class ListenFromServer extends Thread {
     public void run() {
         boolean keepGoing = true;
         while (keepGoing) {
-            String message = client.readMessage();
-            if (message == null || "CHAT_ENDED".equalsIgnoreCase(message)) {
-                keepGoing = false;
-                System.out.println("Chat ended by the server.");
-            } else {
-                System.out.println(message);
-            }
-
             if (Thread.currentThread().isInterrupted()) {
                 keepGoing = false;
             }
+
+//            String message = client.readMessage();
+//            if ("CHAT_ENDED".equalsIgnoreCase(message)) {
+//                keepGoing = false;
+//                System.out.println("Chat ended by the server.");
+//            } else if (message == null)
+//            {
+//                keepGoing = false;
+//            } else
+//            {
+//                System.out.println(message);
+//            }
+            String message = "";
+            try {
+                message = client.readMessage();
+            } catch (IOException | ClassNotFoundException e) {
+                if (e.getMessage() != null)
+                    System.out.println("Error reading message from server: " + e.getMessage());
+            } finally {
+                if ("CHAT_ENDED".equalsIgnoreCase(message)) {
+                    keepGoing = false;
+                    System.out.println("Chat ended by the server.");
+                } else if (message == null) {
+                    keepGoing = false;
+                } else {
+                    System.out.println(message);
+                }
+            }
+
         }
     }
 
