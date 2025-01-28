@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.storeManagement.dataAccessObject.exceptions.DaoException;
 import com.storeManagement.model.Branch;
 import com.storeManagement.utils.DatabaseConnection;
 import com.storeManagement.utils.Logger;
@@ -19,7 +20,7 @@ public class BranchDao implements Dao<Branch>
     static Logger logger = new Logger();
 
     @Override
-    public int add(Branch obj) throws SQLException
+    public int add(Branch obj) throws SQLException, DaoException
     {
         String query = "INSERT INTO Branches (name, address, phone_number) VALUES (?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -36,7 +37,7 @@ public class BranchDao implements Dao<Branch>
                 obj.setId(rs.getInt(1));
             }
         } else {
-            throw new SQLException("Branch not added");
+            throw new DaoException("Branch not added");
         }
 
         logger.log(ADD, obj.toString());
@@ -45,7 +46,7 @@ public class BranchDao implements Dao<Branch>
     }
 
     @Override
-    public void delete(int id) throws SQLException
+    public void delete(int id) throws SQLException, DaoException
     {
         String query = "DELETE FROM Branches WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);
@@ -53,14 +54,14 @@ public class BranchDao implements Dao<Branch>
         int rowsAffected = ps.executeUpdate();
         if(rowsAffected == 0)
         {
-            throw new SQLException("Branch not found");
+            throw new DaoException("Branch not found");
         }
 
         logger.log(DELETE, "Branch with id " + id + " deleted");
     }
 
     @Override
-    public Branch get(int id) throws SQLException
+    public Branch get(int id) throws SQLException, DaoException
     {
         String query = "SELECT * FROM Branches WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);
@@ -71,12 +72,12 @@ public class BranchDao implements Dao<Branch>
         {
             return new Branch(rs.getInt("id"), rs.getString("name"), rs.getString("address"), rs.getString("phone_number"));
         } else {
-            throw new SQLException("Branch not found");
+            throw new DaoException("Branch not found");
         }
     }
 
     @Override
-    public List<Branch> getList() throws SQLException
+    public List<Branch> getList() throws SQLException, DaoException
     {
         String query = "SELECT * FROM Branches";
         PreparedStatement ps = con.prepareStatement(query);
@@ -90,15 +91,14 @@ public class BranchDao implements Dao<Branch>
 
         if (branches.isEmpty())
         {
-            // TODO : create custom exception....
-            //throw new Exception("No branches found");
+            throw new DaoException("No branches found");
         }
 
         return branches;
     }
 
     @Override
-    public void update(Branch obj) throws SQLException
+    public void update(Branch obj) throws SQLException, DaoException
     {
         String query = "UPDATE Branches SET name = ?, address = ?, phone_number = ? WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);
@@ -110,7 +110,7 @@ public class BranchDao implements Dao<Branch>
         int rowsAffected = ps.executeUpdate();
         if (rowsAffected == 0)
         {
-            throw new SQLException("Branch not updated");
+            throw new DaoException("Branch not updated");
         }
 
         logger.log(UPDATE, obj.toString());

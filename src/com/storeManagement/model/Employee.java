@@ -22,14 +22,6 @@ public class Employee {
         setBranchId(branchId);
     }
 
-    // Overloaded Constructor without ID (for new employees)
-    public Employee(String fullName, String phoneNumber, EmployeeRole role, int branchId) {
-        setFullName(fullName);
-        setPhoneNumber(phoneNumber);
-        setRole(role);
-        setBranchId(branchId);
-    }
-
     // Getters
     public int getId() {
         return id;

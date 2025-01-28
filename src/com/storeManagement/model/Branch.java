@@ -21,13 +21,6 @@ public class Branch
         setPhone(phone);
     }
 
-    // Constructor for adding a new branch
-    public Branch(String name, String address, String phone)
-    {
-        setName(name);
-        setAddress(address);
-        setPhone(phone);
-    }
 
     public int getId()
     {

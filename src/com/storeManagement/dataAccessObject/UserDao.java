@@ -141,20 +141,6 @@ public class UserDao implements Dao<User>
         return null;
     }
 
-    public List<User> getUsersByBranch(int branchId) throws SQLException
-    {
-        String query = "SELECT * FROM Users WHERE branch_id = ?";
-        PreparedStatement ps = con.prepareStatement(query);
-        ps.setInt(1, branchId);
-        ResultSet rs = ps.executeQuery();
-        List<User> users = new ArrayList<>();
-        while (rs.next())
-        {
-            users.add(new User(rs.getInt("id"), rs.getString("username"), rs.getString("password_hash"), EmployeeRole.valueOf(rs.getString("role")), rs.getInt("branch_id")));
-        }
-        return users;
-    }
-
     public boolean authenticateUser(String username, String password) throws SQLException
     {
         String query = "SELECT * FROM Users WHERE username = ? AND password_hash = ?";

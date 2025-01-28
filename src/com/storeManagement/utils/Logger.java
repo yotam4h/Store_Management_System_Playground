@@ -4,8 +4,6 @@ import com.storeManagement.model.Log;
 import com.storeManagement.utils.Constants.OperationType;
 
 import java.io.File;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 
 public class Logger
 {

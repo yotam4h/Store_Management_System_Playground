@@ -1,6 +1,7 @@
 package com.storeManagement;
 
 import com.storeManagement.dataAccessObject.*;
+import com.storeManagement.dataAccessObject.exceptions.DaoException;
 import com.storeManagement.model.*;
 import com.storeManagement.utils.Constants;
 
@@ -337,7 +338,7 @@ public class Menus {
                     break;
                 }
                 case 4: { // write to a text file a report by branch id
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try {
                         if (branchId == 0) {
                             Branch branch = new Branch();
@@ -355,7 +356,7 @@ public class Menus {
                     try (FileWriter writer = new FileWriter("./branch_sales_report.txt")) {
                         writer.write("SALES BY BRANCH:\n");
                         for (Sale sale : sales) {
-                            Product product = null;
+                            Product product;
                             try {
                                 product = productDao.get(sale.getProductId());
                             } catch (SQLException e) {
@@ -384,7 +385,7 @@ public class Menus {
                     Product product = new Product();
                     product.setId();
 
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try {
                         sales = saleDao.getSalesByProduct(product.getId());
                     } catch (SQLException e) {
@@ -423,7 +424,7 @@ public class Menus {
                     System.out.println("\n\nSALES BY CATEGORY");
                     Product product = new Product();
                     product.setCategory();
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try {
                         sales = saleDao.getSalesByCategory(product.getCategory());
                     } catch (SQLException e) {
@@ -519,7 +520,7 @@ public class Menus {
                         }
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -558,7 +559,7 @@ public class Menus {
 
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                 }
                 case 3:
@@ -578,7 +579,7 @@ public class Menus {
                 case 4:
                 {
                     System.out.println("\n\nVIEW SALES");
-                    List<Sale> sales = null;
+                    List<Sale> sales;
                     try
                     {
                         sales = saleDao.getSalesByBranch(branchId);
@@ -596,7 +597,7 @@ public class Menus {
                 case 5:
                 {
                     System.out.println("\n\nVIEW PRODUCTS");
-                    List<Product> products = null;
+                    List<Product> products;
                     try
                     {
                         products = productDao.getProductsByBranch(branchId);
@@ -662,7 +663,7 @@ public class Menus {
                         employeeDao.add(newEmployee);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -692,7 +693,7 @@ public class Menus {
                     try {
                         employeeDao.update(employee);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -704,14 +705,14 @@ public class Menus {
                     try {
                         employeeDao.delete(employee.getId());
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
                 case 4:
                 {
                     System.out.println("\n\nVIEW EMPLOYEES");
-                    List<Employee> employees = null;
+                    List<Employee> employees;
                     try {
                         if (role == Constants.EmployeeRole.ADMIN)
                             employees = employeeDao.getList();
@@ -773,7 +774,7 @@ public class Menus {
                         productDao.add(newProduct);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -806,7 +807,7 @@ public class Menus {
                         productDao.update(product);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -821,14 +822,14 @@ public class Menus {
                         productDao.delete(product.getId());
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
                 case 4:
                 {
                     System.out.println("\n\nVIEW PRODUCTS");
-                    List<Product> products = null;
+                    List<Product> products;
                     try
                     {
                         if (branchId == 0)
@@ -889,7 +890,7 @@ public class Menus {
                         customerDao.add(newCustomer);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -914,7 +915,7 @@ public class Menus {
                         customerDao.update(customer);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -929,14 +930,14 @@ public class Menus {
                         customerDao.delete(customer.getId());
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
                 case 4:
                 {
                     System.out.println("\n\nVIEW CUSTOMERS");
-                    List<Customer> customers = null;
+                    List<Customer> customers;
                     try
                     {
                         customers = customerDao.getList();
@@ -1010,9 +1011,9 @@ public class Menus {
                     try
                     {
                         branchDao.update(branch);
-                    } catch (SQLException e)
+                    } catch (SQLException | DaoException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -1024,20 +1025,20 @@ public class Menus {
                     try
                     {
                         branchDao.delete(branch.getId());
-                    } catch (SQLException e)
+                    } catch (SQLException | DaoException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
                 case 4:
                 {
                     System.out.println("\n\nVIEW BRANCHES");
-                    List<Branch> branches = null;
+                    List<Branch> branches;
                     try
                     {
                         branches = branchDao.getList();
-                    } catch (SQLException e)
+                    } catch (SQLException | DaoException e)
                     {
                         System.out.println(e.getMessage());
                         break;
@@ -1061,7 +1062,6 @@ public class Menus {
     static void userDaoMenu()
     {
         UserDao userDao = new UserDao();
-        Scanner s = new Scanner(System.in);
         int choice = 0;
 
         while(choice != 5)
@@ -1092,7 +1092,7 @@ public class Menus {
                         userDao.add(newUser);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -1119,7 +1119,7 @@ public class Menus {
                         userDao.update(user);
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -1134,7 +1134,7 @@ public class Menus {
                         userDao.delete(user.getId());
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     break;
                 }
@@ -1147,7 +1147,7 @@ public class Menus {
                         users = userDao.getList();
                     } catch (SQLException e)
                     {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                     if (users == null)
                     {

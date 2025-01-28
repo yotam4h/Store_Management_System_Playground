@@ -23,13 +23,6 @@ public class User
         setBranchId(branch_id);
     }
 
-    public User(String username, String password_hash, EmployeeRole role, int branch_id) {
-        setUsername(username);
-        setPasswordHash(password_hash);
-        setRole(role);
-        setBranchId(branch_id);
-    }
-
     public int getId() {
         return id;
     }

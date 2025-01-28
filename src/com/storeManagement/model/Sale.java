@@ -19,20 +19,6 @@ public class Sale
 
     public Sale() {}
 
-    public Sale(int customer_id, int product_id, int quantity, int branch_id, double total_price)
-    {
-
-        setCustomerId(customer_id);
-        setProductId(product_id);
-        try {
-            setQuantity(quantity);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        setBranchId(branch_id);
-        setTotalPrice(total_price);
-    }
-
     public Sale(int id, int customer_id, int product_id, int quantity, int branch_id,double total_price)
     {
         setId(id);

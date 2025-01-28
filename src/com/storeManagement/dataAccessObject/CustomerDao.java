@@ -91,8 +91,7 @@ public class CustomerDao implements Dao<Customer>
 
         if (customers.isEmpty())
         {
-            // TODO : create custom exception....
-            //throw new Exception("No customers found");
+            throw new SQLException("No customers found");
         }
 
         return customers;

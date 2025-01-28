@@ -23,7 +23,7 @@ public class EmployeeDao implements Dao<Employee>
         try {
             con = DatabaseConnection.getConnection();
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            System.out.println("IllegalStateException: " + e.getMessage());
         }
         try {
             if(System.getProperty("os.name").startsWith("Windows")) {
@@ -32,7 +32,7 @@ public class EmployeeDao implements Dao<Employee>
                 logger = new Logger("/logs/log.txt");
             }
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            System.out.println("IllegalStateException: " + e.getMessage());
         }
     }
 
@@ -116,8 +116,7 @@ public class EmployeeDao implements Dao<Employee>
 
         if (employees.isEmpty())
         {
-            // TODO : create custom exception....
-            //throw new Exception("No employees found");
+            throw new SQLException("No employees found");
         }
 
         return employees;
@@ -163,8 +162,7 @@ public class EmployeeDao implements Dao<Employee>
 
         if (employees.isEmpty())
         {
-            // TODO : create custom exception....
-            //throw new Exception("No employees found");
+            throw new SQLException("No employees found");
         }
 
         return employees;

@@ -1,6 +1,5 @@
 package com.storeManagement.model;
 
-import com.storeManagement.utils.Constants;
 import com.storeManagement.utils.Constants.Category;
 
 import java.util.Scanner;
@@ -19,15 +18,6 @@ public class Product
     public Product(int id, String name, Category category, double price, int stock_quantity, int branch_id)
     {
         setId(id);
-        setName(name);
-        setCategory(category);
-        setPrice(price);
-        setStockQuantity(stock_quantity);
-        setBranchId(branch_id);
-    }
-
-    public Product(String name, Category category, double price, int stock_quantity, int branch_id)
-    {
         setName(name);
         setCategory(category);
         setPrice(price);

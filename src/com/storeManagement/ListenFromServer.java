@@ -1,7 +1,6 @@
 package com.storeManagement;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 class ListenFromServer extends Thread {
     private final Client client;

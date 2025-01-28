@@ -1,10 +1,8 @@
 package com.storeManagement;
 
-import com.storeManagement.dataAccessObject.UserDao;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.SQLException;
 
 public class ClientThread extends Thread {
     private Socket socket;
@@ -75,7 +73,7 @@ public class ClientThread extends Thread {
             if (outputStream != null) outputStream.close();
             server.removeClient(this); // Remove the client from the server's list of clients
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error closing client: " + e.getMessage());
         }
     }
 

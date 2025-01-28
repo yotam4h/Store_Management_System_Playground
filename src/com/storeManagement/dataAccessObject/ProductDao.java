@@ -47,7 +47,7 @@ public class ProductDao implements Dao<Product>
         String query = "INSERT INTO Products (name, category, price, stock_quantity, branch_id) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setString(1, product.getName());
-        ps.setString(2, product.getCategory().toString());
+        ps.setString(2, product.getCategory());
         ps.setDouble(3, product.getPrice());
         ps.setInt(4, product.getStockQuantity());
         ps.setInt(5, product.getBranchId());
@@ -122,7 +122,7 @@ public class ProductDao implements Dao<Product>
         String query = "UPDATE Products SET name = ?, category = ?, price = ?, stock_quantity = ?, branch_id = ? WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setString(1, product.getName());
-        ps.setString(2, product.getCategory().toString());
+        ps.setString(2, product.getCategory());
         ps.setDouble(3, product.getPrice());
         ps.setInt(4, product.getStockQuantity());
         ps.setInt(5, product.getBranchId());
@@ -151,17 +151,4 @@ public class ProductDao implements Dao<Product>
         return products;
     }
 
-    public List<Product> getProductsByCategory(Category category) throws SQLException
-    {
-        String query = "SELECT * FROM Products WHERE category = ?";
-        PreparedStatement ps = con.prepareStatement(query);
-        ps.setString(1, category.toString());
-        ResultSet rs = ps.executeQuery();
-        List<Product> products = new ArrayList<>();
-        while (rs.next())
-        {
-            products.add(new Product(rs.getInt("id"), rs.getString("name"), Category.valueOf(rs.getString("category")), rs.getDouble("price"), rs.getInt("stock_quantity"), rs.getInt("branch_id")));
-        }
-        return products;
-    }
 }
